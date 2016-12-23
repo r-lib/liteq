@@ -3,8 +3,8 @@ Title: Lightweight Portable Message Queue Using 'SQLite'
 Version: 0.0.0.9000
 Author: Gábor Csárdi
 Maintainer: Gábor Csárdi <csardi.gabor@gmail.com>
-Description: Temporary and permanent message queues for R. Built on top of 'SQLite'
-  databases.
+Description: Temporary and permanent message queues for R. Built on top of
+    'SQLite' databases.
 License: MIT + file LICENSE
 LazyData: true
 URL: https://github.com/gaborcsardi/liteq
@@ -12,3 +12,4 @@ BugReports: https://github.com/gaborcsardi/liteq/issues
 RoxygenNote: 5.0.1.9000
 Suggests: 
     testthat
+Encoding: UTF-8
