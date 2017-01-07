@@ -9,7 +9,12 @@ License: MIT + file LICENSE
 LazyData: true
 URL: https://github.com/gaborcsardi/liteq
 BugReports: https://github.com/gaborcsardi/liteq/issues
+Roxygen: list(markdown = TRUE)
 RoxygenNote: 5.0.1.9000
+Imports:
+    DBI,
+    rappdirs,
+    RSQLite
 Suggests: 
     testthat
 Encoding: UTF-8
