@@ -41,7 +41,7 @@ do_db <- function(db, query, ...) {
 }
 
 db_lock <- function(con) {
-  dbGetQuery(con, "PRAGMA busy_timeout = 10000")
+  dbGetQuery(con, "PRAGMA busy_timeout = 1000")
   done <- FALSE
   while (!done) {
     tryCatch(
