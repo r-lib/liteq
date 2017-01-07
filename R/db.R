@@ -36,8 +36,8 @@ db_query <- function(con, query, ...) {
 
 do_db <- function(db, query, ...) {
   con <- dbConnect(SQLite(), db)
+  on.exit(dbDisconnect(con))
   db_query(con, query, ...)
-  dbDisconnect(con)
 }
 
 db_lock <- function(con) {
