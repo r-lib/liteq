@@ -10,8 +10,10 @@
 
 create_queue <- function(name = NULL, db = default_db()) {
 
+  name <- name %||% random_queue_name()
+
   ensure_db(db)
-  db_create_queue(name %||% random_queue_name(), db)
+  db_create_queue(name, db)
 
   make_queue(name, db)
 }
