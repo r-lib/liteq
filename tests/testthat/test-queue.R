@@ -12,6 +12,17 @@ test_that("create_queue", {
   expect_true(q$name %in% db_list_queues(db)$name)
 })
 
+test_that("ensure_queue", {
+  db <- tempfile()
+  q <- ensure_queue("foo", db = db)
+  expect_true(inherits(q, "liteq_queue"))
+  expect_equal(db_list_queues(db)$name, "foo")
+
+  expect_silent(q <- ensure_queue("foo", db = db))
+  expect_true(inherits(q, "liteq_queue"))
+  expect_equal(db_list_queues(db)$name, "foo")
+})
+
 test_that("delete_queue", {
   ## TODO
 })

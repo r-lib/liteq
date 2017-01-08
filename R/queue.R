@@ -29,6 +29,22 @@ delete_queue <- function(queue, force = FALSE) {
   ## TODO
 }
 
+#' Make sure that a queue exists
+#'
+#' If it does not exist, then the queue will be created.
+#'
+#' @param name Name of the queue.
+#' @param db Path to the database file.
+#' @return The queue object.
+#'
+#' @export
+
+ensure_queue <- function(name, db = default_db()) {
+  ensure_db(db)
+  db_ensure_queue(name, db)
+  make_queue(name, db)
+}
+
 #' List all queues in a database
 #'
 #' @export

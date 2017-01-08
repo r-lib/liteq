@@ -69,6 +69,16 @@ db_create_db <- function(db) {
   )
 }
 
+#' @importFrom RSQLite dbExistsTable
+
+db_ensure_queue <- function(name, db) {
+  con <- dbConnect(SQLite(), db)
+  on.exit(dbDisconnect(con), add = TRUE)
+  db_query(con, "BEGIN EXCLUSIVE")
+  tablename <- db_queue_name(name)
+  if (!dbExistsTable(con, tablename)) db_create_queue_locked(con, name)
+}
+
 #' Create a queue
 #'
 #' The database columns:
@@ -86,7 +96,11 @@ db_create_db <- function(db) {
 db_create_queue <- function(name, db) {
   con <- dbConnect(SQLite(), db)
   on.exit(dbDisconnect(con), add = TRUE)
-  db_query(con, "BEGIN")
+  db_query(con, "BEGIN EXCLUSIVE")
+  db_create_queue_locked(con, name)
+}
+
+db_create_queue_locked <- function(con, name) {
   db_query(
     con,
     'CREATE TABLE ?tablename (
@@ -221,5 +235,5 @@ db_consume <- function(db, queue) {
 db_ack <- function(db, queue, id, lock, success) {
   con <- dbConnect(SQLite(), db)
   db_lock(con)
-
+  ## TODO
 }
