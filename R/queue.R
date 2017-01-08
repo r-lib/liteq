@@ -35,7 +35,7 @@ delete_queue <- function(queue, force = FALSE) {
 
 list_queues <- function(db = default_db()) {
   ensure_db(db)
-  lapply(db_list_queues(db), db = db)
+  lapply(db_list_queues(db)$name, make_queue, db = db)
 }
 
 make_queue <- function(name, db) {
