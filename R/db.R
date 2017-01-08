@@ -27,6 +27,10 @@ ensure_db <- function(db) {
   )
 }
 
+db_queue_name <- function(name) {
+  paste0("qq", name)
+}
+
 db_query <- function(con, query, ...) {
   dbGetQuery(con, sqlInterpolate(con, query, ...))
 }
@@ -80,20 +84,26 @@ db_create_db <- function(db) {
 #' @keywords internal
 
 db_create_queue <- function(name, db) {
-  do_db(
-    db,
-    'CREATE TABLE ?name (
+  con <- dbConnect(SQLite(), db)
+  on.exit(dbDisconnect(con), add = TRUE)
+  db_query(con, "BEGIN")
+  db_query(
+    con,
+    'CREATE TABLE ?tablename (
       id INTEGER PRIMARY KEY,
       title TEXT NOT NULL,
       message TEXT NOT NULL,
-      status TEXT DEFAULT "READY"
-    );
-    INSERT INTO meta (queue, created, lockdir) VALUES
-      (?name, DATE("now"), ?lockdir)
-    );',
+      status TEXT DEFAULT "READY")',
+    tablename = db_queue_name(name)
+  )
+  db_query(
+    con,
+    'INSERT INTO meta (name, created, lockdir) VALUES
+      (?name, DATE("now"), ?lockdir)',
     name = name,
     lockdir = file.path(user_cache_dir(appname = "liteq"))
   )
+  db_query(con, "COMMIT")
 }
 
 db_list_queues <- function(db) {
@@ -103,9 +113,9 @@ db_list_queues <- function(db) {
 db_publish <- function(db, queue, title, message) {
   do_db(
     db,
-    "INSERT INTO ?table (title, message)
+    "INSERT INTO ?tablename (title, message)
      VALUES (?title, ?message)",
-    table = queue,
+    tablename = db_qeueue_name(queue),
     title = title,
     message = message
   )
@@ -147,13 +157,13 @@ db_try_consume <- function(db, queue, crashed = TRUE, con = NULL) {
 
   ## See if there is a message to work on. If there is, we just return it.
   msg <- db_query(
-    con, 'SELECT * FROM ?table WHERE status = "READY" LIMIT 1',
-    table = queue
+    con, 'SELECT * FROM ?tablename WHERE status = "READY" LIMIT 1',
+    tablename = db_table_name(queue)
   )
   if (nrow(msg) == 1) {
     db_query(
-      con, 'UPDATE ?table SET status = "WORKING" WHERE id = ?id',
-      table = queue,
+      con, 'UPDATE ?tablename SET status = "WORKING" WHERE id = ?id',
+      tablename = db_table_name(queue),
       id = msg$id
     )
     lockdir <- db_query(
@@ -173,8 +183,8 @@ db_try_consume <- function(db, queue, crashed = TRUE, con = NULL) {
 
 db_clean_crashed <- function(con, queue) {
   work <- db_query(
-    con, 'SELECT * FROM ?table WHERE status = "WORKING"',
-    table = queue
+    con, 'SELECT * FROM ?tablename WHERE status = "WORKING"',
+    tablename = db_table_name(queue)
   )
   if (nrow(work) == 0) return(FALSE)
 
@@ -196,8 +206,8 @@ db_clean_crashed <- function(con, queue) {
     if (! identical(x, "busy")) {
       try_silent(dbDisconnect(lcon))
       db_query(
-        con, 'UPDATE ?table SET status = "READY" WHERE id = ?id',
-        table = queue,
+        con, 'UPDATE ?tablename SET status = "READY" WHERE id = ?id',
+        tablename = db_table_name(queue),
         id = work$id[i]
       )
     }
