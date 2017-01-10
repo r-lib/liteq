@@ -9,6 +9,7 @@
 [![Windows Build status](https://ci.appveyor.com/api/projects/status/github/gaborcsardi/liteq?svg=true)](https://ci.appveyor.com/project/gaborcsardi/liteq)
 [![](http://www.r-pkg.org/badges/version/liteq)](http://www.r-pkg.org/pkg/liteq)
 [![CRAN RStudio mirror downloads](http://cranlogs.r-pkg.org/badges/liteq)](http://www.r-pkg.org/pkg/liteq)
+[![Coverage Status](https://img.shields.io/codecov/c/github/gaborcsardi/liteq/master.svg)](https://codecov.io/github/gaborcsardi/liteq?branch=master)
 
 Temporary and permanent message queues for R. Built on top of SQLite
 databases.

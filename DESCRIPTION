@@ -16,5 +16,6 @@ Imports:
     rappdirs,
     RSQLite
 Suggests: 
+    covr,
     testthat
 Encoding: UTF-8
