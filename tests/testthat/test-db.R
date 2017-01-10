@@ -18,7 +18,7 @@ test_that("db_query", {
   db <- tempfile()
   on.exit(unlink(db))
   ensure_db(db)
-  con <- dbConnect(SQLite(), db)
+  con <- dbConnect(SQLite(), db, synchronous = NULL)
   on.exit(dbDisconnect(con))
   db_query(
     con, 'INSERT INTO ?table (name) VALUES (?value)',
@@ -27,6 +27,26 @@ test_that("db_query", {
   expect_equal(
     db_query(con, "SELECT name FROM meta"),
     data.frame(name = "foobar", stringsAsFactors = FALSE)
+  )
+})
+
+test_that("db_execute", {
+  db <- tempfile()
+  on.exit(unlink(db))
+  ensure_db(db)
+  con <- dbConnect(SQLite(), db, synchronous = NULL)
+  on.exit(dbDisconnect(con))
+  db_query(
+    con, 'INSERT INTO ?table (name) VALUES (?value)',
+    table = "meta", value = "foobar"
+  )
+  expect_equal(
+    db_execute(con, "DELETE FROM meta WHERE name = ?n", n = "foobar"),
+    1
+  )
+  expect_equal(
+    db_execute(con, "DELETE FROM meta WHERE name = ?n", n = "foobar"),
+    0
   )
 })
 
@@ -47,15 +67,15 @@ test_that("do_db", {
 test_that("db_lock", {
   db <- tempfile()
   ensure_db(db)
-  con <- dbConnect(SQLite(), db)
-  con2 <- dbConnect(SQLite(), db)
+  con <- dbConnect(SQLite(), db, synchronous = NULL)
+  con2 <- dbConnect(SQLite(), db, synchronous = NULL)
   db_lock(con)
 
   ## We can do queries
   expect_silent(db_query(con, "SELECT * FROM meta"))
 
   ## But others cannot even connect
-  con3 <- dbConnect(SQLite(), db)
+  con3 <- dbConnect(SQLite(), db, synchronous = NULL)
   expect_error(db_query(con3, "SELECT * FROM meta"))
 
   ## Already existing connections cannot query

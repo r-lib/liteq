@@ -17,6 +17,7 @@ it can be used to filter messages.
 \itemize{
 \item \code{READY}, ready to be consumed
 \item \code{WORKING}, it is being consumed
+\item \code{FAILED}, failed.
 }
 }
 }

@@ -1,4 +1,12 @@
 
+#' @importFrom DBI dbGetQuery sqlInterpolate dbConnect dbDisconnect
+#' @importFrom DBI dbExecute
+#' @importFrom RSQLite SQLite
+
+db_connect <- function(..., synchronous = NULL) {
+  dbConnect(SQLite(), synchronous = synchronous, ...)
+}
+
 #' @importFrom rappdirs user_data_dir
 #' @export
 
@@ -35,11 +43,12 @@ db_query <- function(con, query, ...) {
   dbGetQuery(con, sqlInterpolate(con, query, ...))
 }
 
-#' @importFrom DBI dbGetQuery sqlInterpolate dbConnect dbDisconnect
-#' @importFrom RSQLite SQLite
+db_execute <- function(con, query, ...) {
+  dbExecute(con, sqlInterpolate(con, query, ...))
+}
 
 do_db <- function(db, query, ...) {
-  con <- dbConnect(SQLite(), db)
+  con <- db_connect(db)
   on.exit(dbDisconnect(con))
   db_query(con, query, ...)
 }
@@ -72,11 +81,11 @@ db_create_db <- function(db) {
 #' @importFrom RSQLite dbExistsTable
 
 db_ensure_queue <- function(name, db) {
-  con <- dbConnect(SQLite(), db)
+  con <- db_connect(db)
   on.exit(dbDisconnect(con), add = TRUE)
   db_query(con, "BEGIN EXCLUSIVE")
   tablename <- db_queue_name(name)
-  if (!dbExistsTable(con, tablename)) db_create_queue_locked(con, name)
+  if (!dbExistsTable(con, tablename)) db_create_queue_locked(db, con, name)
 }
 
 #' Create a queue
@@ -89,22 +98,23 @@ db_ensure_queue <- function(name, db) {
 #' * status Can be:
 #'   * `READY`, ready to be consumed
 #'   * `WORKING`, it is being consumed
+#'   * `FAILED`, failed.
 #'
 #' @importFrom rappdirs user_cache_dir
 #' @keywords internal
 
 db_create_queue <- function(name, db) {
-  con <- dbConnect(SQLite(), db)
+  con <- db_connect(db)
   on.exit(dbDisconnect(con), add = TRUE)
   db_query(con, "BEGIN EXCLUSIVE")
-  db_create_queue_locked(con, name)
+  db_create_queue_locked(db, con, name)
 }
 
-db_create_queue_locked <- function(con, name) {
+db_create_queue_locked <- function(db, con, name) {
   db_query(
     con,
     'CREATE TABLE ?tablename (
-      id INTEGER PRIMARY KEY,
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
       title TEXT NOT NULL,
       message TEXT NOT NULL,
       status TEXT DEFAULT "READY")',
@@ -115,9 +125,16 @@ db_create_queue_locked <- function(con, name) {
     'INSERT INTO meta (name, created, lockdir) VALUES
       (?name, DATE("now"), ?lockdir)',
     name = name,
-    lockdir = file.path(user_cache_dir(appname = "liteq"))
+    lockdir = db_lockdir(db)
   )
   db_query(con, "COMMIT")
+}
+
+db_lockdir <- function(db) {
+  file.path(
+    user_cache_dir(appname = "liteq"),
+    paste0(basename(db), "-", random_lock_name())
+  )
 }
 
 db_list_queues <- function(db) {
@@ -129,10 +146,11 @@ db_publish <- function(db, queue, title, message) {
     db,
     "INSERT INTO ?tablename (title, message)
      VALUES (?title, ?message)",
-    tablename = db_qeueue_name(queue),
+    tablename = db_queue_name(queue),
     title = title,
     message = message
   )
+  invisible()
 }
 
 #' Try to consume a message from the queue
@@ -162,43 +180,44 @@ db_publish <- function(db, queue, title, message) {
 
 db_try_consume <- function(db, queue, crashed = TRUE, con = NULL) {
   if (is.null(con)) {
-    con <- dbConnect(SQLite(), db)
+    con <- db_connect(db)
     on.exit(try_silent(dbDisconnect(con)), add = TRUE)
+    db_lock(con)
   }
-
-  ## Lock DB
-  db_lock(con)
 
   ## See if there is a message to work on. If there is, we just return it.
   msg <- db_query(
     con, 'SELECT * FROM ?tablename WHERE status = "READY" LIMIT 1',
-    tablename = db_table_name(queue)
+    tablename = db_queue_name(queue)
   )
   if (nrow(msg) == 1) {
     db_query(
       con, 'UPDATE ?tablename SET status = "WORKING" WHERE id = ?id',
-      tablename = db_table_name(queue),
+      tablename = db_queue_name(queue),
       id = msg$id
     )
     lockdir <- db_query(
       con, "SELECT lockdir FROM meta WHERE name = ?name",
       name = queue
     )$lockdir
+    db_execute(con, "COMMIT")
     return(make_message(msg$id, msg$title, msg$message, db, queue, lockdir))
   }
 
   ## Otherwise we need to check on crashed workers
-  if (db_clean_crashed(con, queue)) {
+  if (crashed && db_clean_crashed(con, queue)) {
     db_try_consume(db, queue, crashed = FALSE, con = con)
   }
 
-  ## The disconnect in on.exit will unlock the DB
+  db_execute(con, "COMMIT")
+
+  NULL
 }
 
 db_clean_crashed <- function(con, queue) {
   work <- db_query(
     con, 'SELECT * FROM ?tablename WHERE status = "WORKING"',
-    tablename = db_table_name(queue)
+    tablename = db_queue_name(queue)
   )
   if (nrow(work) == 0) return(FALSE)
 
@@ -212,7 +231,7 @@ db_clean_crashed <- function(con, queue) {
     lock <- locks[[i]]
     x <- tryCatch(
       {
-        lcon <- dbConnect(SQLite(), lock)
+        lcon <- db_connect(lock)
         dbGetQuery(lcon, "SELECT * FROM foo")
       },
       error = function(x) "busy"
@@ -221,7 +240,7 @@ db_clean_crashed <- function(con, queue) {
       try_silent(dbDisconnect(lcon))
       db_query(
         con, 'UPDATE ?tablename SET status = "READY" WHERE id = ?id',
-        tablename = db_table_name(queue),
+        tablename = db_queue_name(queue),
         id = work$id[i]
       )
     }
@@ -232,8 +251,48 @@ db_consume <- function(db, queue) {
   ## TODO
 }
 
+#' Positive or negative ackowledgement
+#'
+#' If positive, then we need to remove the message from the queue.
+#' If negative, we just set the status to `FAILED`.
+#'
+#' @param db DB file.
+#' @param queue Queue name.
+#' @param id Message id.
+#' @param lock Name of the message lock file.
+#' @param success Whether this is a positive or negative ACK.
+#'
+#' @keywords internal
+
 db_ack <- function(db, queue, id, lock, success) {
-  con <- dbConnect(SQLite(), db)
+  con <- db_connect(db)
+  on.exit(try_silent(dbDisconnect(con)), add = TRUE)
   db_lock(con)
-  ## TODO
+  if (success) {
+    num <- db_execute(
+      con, "DELETE FROM ?tablename WHERE id = ?id",
+      tablename = db_queue_name(queue), id = id
+    )
+
+  } else {
+    num <- db_execute(
+      con, 'UPDATE ?tablename SET status = "FAILED" WHERE id = ?id',
+      tablename = db_queue_name(queue), id = id
+    )
+  }
+
+  if (num == 0) stop("Message does not exist, internal error?")
+  if (num > 1) stop("Multiple messages with the same id, internal error")
+
+  lockdir <- db_query(
+    con, "SELECT lockdir FROM meta WHERE name = ?name",
+    name = queue
+  )$lockdir
+
+  lock <- message_lock_file(lockdir, queue, id)
+  unlink(lock)
+
+  db_execute(con, "COMMIT")
+
+  invisible()
 }

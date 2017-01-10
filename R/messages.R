@@ -18,12 +18,19 @@
 #' @keywords internal
 
 make_message <- function(id, title, message, db, queue, lockdir) {
+  dir.create(lockdir, recursive = TRUE, showWarnings = FALSE)
   lock <- message_lock_file(lockdir, queue, id)
-  con <- dbConnect(SQLite(), lock)
+  con <- db_connect(lock)
   db_query(con, "CREATE TABLE foo (id INT)")
 
   structure(
-    list(id = id, title = title, message = message, db = db, lock = con),
+    list(
+      id = id,
+      title = title,
+      message = message,
+      db = db, queue = queue,
+      lock = con
+    ),
     class = "liteq_message"
   )
 }
