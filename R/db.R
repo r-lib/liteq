@@ -206,12 +206,14 @@ db_try_consume <- function(db, queue, crashed = TRUE, con = NULL) {
 
   ## Otherwise we need to check on crashed workers
   if (crashed && db_clean_crashed(con, queue)) {
-    db_try_consume(db, queue, crashed = FALSE, con = con)
+    mmsg <- db_try_consume(db, queue, crashed = FALSE, con = con)
+    tryCatch(db_execute(con, "COMMIT"), error = function(e) NULL)
+    return(mmsg)
+
+  } else {
+    tryCatch(db_execute(con, "COMMIT"), error = function(e) NULL)
+    NULL
   }
-
-  db_execute(con, "COMMIT")
-
-  NULL
 }
 
 db_clean_crashed <- function(con, queue) {
@@ -238,13 +240,15 @@ db_clean_crashed <- function(con, queue) {
     )
     if (! identical(x, "busy")) {
       try_silent(dbDisconnect(lcon))
-      db_query(
+      db_execute(
         con, 'UPDATE ?tablename SET status = "READY" WHERE id = ?id',
         tablename = db_queue_name(queue),
         id = work$id[i]
       )
+      unlink(lock)
     }
   }
+  TRUE
 }
 
 db_consume <- function(db, queue) {
