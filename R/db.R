@@ -323,3 +323,11 @@ db_ack <- function(db, queue, id, lock, success) {
 
   invisible()
 }
+
+db_list_messages <- function(db, queue) {
+  do_db(
+    db,
+    "SELECT id, title, status FROM ?tablename",
+    tablename = db_queue_name(queue)
+  )
+}

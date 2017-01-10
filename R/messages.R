@@ -102,3 +102,14 @@ print.liteq_message <- function(x, ...) {
   cat("  ", x$title, " (", msg_bytes, " B)\n", sep = "")
   invisible(x)
 }
+
+#' List all messages in a queue
+#'
+#' @param queue The queue object.
+#' @return Data frame with columns: `id`, `title`, `status`.
+#'
+#' @export
+
+list_messages <- function(queue) {
+  db_list_messages(queue$db, queue$name)
+}
