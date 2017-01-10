@@ -7,6 +7,14 @@ db_connect <- function(..., synchronous = NULL) {
   dbConnect(SQLite(), synchronous = synchronous, ...)
 }
 
+#' The name of the default database
+#'
+#' If the queue database is not specified explicitly,
+#' then `liteq` uses this file. Its location is determined via the
+#' `rappdirs` package, see [rappdirs::user_data_dir()].
+#'
+#' @return A characater scalar, the name of the default database.
+#'
 #' @importFrom rappdirs user_data_dir
 #' @export
 

@@ -6,6 +6,12 @@
 \usage{
 list_queues(db = default_db())
 }
+\arguments{
+\item{db}{The queue database to query.}
+}
+\value{
+A list of \code{liteq_queue} objects.
+}
 \description{
 List all queues in a database
 }

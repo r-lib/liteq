@@ -47,6 +47,9 @@ ensure_queue <- function(name, db = default_db()) {
 
 #' List all queues in a database
 #'
+#' @param db The queue database to query.
+#' @return A list of `liteq_queue` objects.
+#'
 #' @export
 
 list_queues <- function(db = default_db()) {
