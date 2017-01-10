@@ -93,3 +93,12 @@ ack <- function(message) {
 nack <- function(message) {
   db_ack(message$db, message$queue, message$id, message$lock, FALSE)
 }
+
+#' @export
+
+print.liteq_message <- function(x, ...) {
+  cat("liteq message from queue ", sQuote(x$queue), ":\n", sep = "")
+  msg_bytes <- nchar(x$message, type = "bytes")
+  cat("  ", x$title, " (", msg_bytes, " B)\n", sep = "")
+  invisible(x)
+}
