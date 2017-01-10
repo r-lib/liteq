@@ -251,8 +251,23 @@ db_clean_crashed <- function(con, queue) {
   TRUE
 }
 
-db_consume <- function(db, queue) {
-  ## TODO
+#' Consume a message from a message queue
+#'
+#' This is the blocking version of [try_consume()]. Currently it just
+#' polls twice a second, and sleeps between the polls. Each poll will also
+#' trigger a crash cleanup, if there are workers running.
+#'
+#' @inheritParams try_consume
+#'
+#' @keywords internal
+
+db_consume <- function(db, queue, poll_interval = 500) {
+  while (TRUE) {
+    msg <- db_try_consume(db, queue)
+    if (!is.null(msg)) break
+    Sys.sleep(poll_interval / 1000)
+  }
+  msg
 }
 
 #' Positive or negative ackowledgement
