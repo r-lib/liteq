@@ -4,13 +4,20 @@
 \alias{create_queue}
 \title{Create a queue in a database}
 \usage{
-create_queue(name = NULL, db = default_db())
+create_queue(name = NULL, db = default_db(), crash_strategy = "fail")
 }
 \arguments{
 \item{name}{Name of the queue. If not specified or \code{NULL}, a
 name is generated randomly.}
 
 \item{db}{Path to the database file.}
+
+\item{crash_strategy}{What to do with crashed jobs. The default is that
+they will \code{"fail"} (just like a negative acknowledgement). Another
+possibility is \code{"requeue"}, in which case they are requeued
+immediately, potentially even multiple times. Alternatively it can be
+a number, in which case they are requeued at most the specified number
+of times.}
 }
 \description{
 It also creates the database, if it does not exist.

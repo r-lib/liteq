@@ -83,19 +83,22 @@ db_create_db <- function(db) {
     "CREATE TABLE meta (
        name TEXT PRIMARY KEY,
        created TIMESTAMP,
-       lockdir TEXT
+       lockdir TEXT,
+       requeue TEXT DEFAULT \"fail\"   -- fail/ requeue/ number of requeues
     )"
   )
 }
 
 #' @importFrom RSQLite dbExistsTable
 
-db_ensure_queue <- function(name, db) {
+db_ensure_queue <- function(name, db, crash_strategy) {
   con <- db_connect(db)
   on.exit(dbDisconnect(con), add = TRUE)
   db_query(con, "BEGIN EXCLUSIVE")
   tablename <- db_queue_name(name)
-  if (!dbExistsTable(con, tablename)) db_create_queue_locked(db, con, name)
+  if (!dbExistsTable(con, tablename)) {
+    db_create_queue_locked(db, con, name, crash_strategy)
+  }
 }
 
 #' Create a queue
@@ -109,33 +112,37 @@ db_ensure_queue <- function(name, db) {
 #'   * `READY`, ready to be consumed
 #'   * `WORKING`, it is being consumed
 #'   * `FAILED`, failed.
+#' * requeued How many times the message was requeued.
 #'
+#' @inheritParams create_queue
 #' @importFrom rappdirs user_cache_dir
 #' @keywords internal
 
-db_create_queue <- function(name, db) {
+db_create_queue <- function(name, db, crash_strategy) {
   con <- db_connect(db)
   on.exit(dbDisconnect(con), add = TRUE)
   db_query(con, "BEGIN EXCLUSIVE")
-  db_create_queue_locked(db, con, name)
+  db_create_queue_locked(db, con, name, crash_strategy)
 }
 
-db_create_queue_locked <- function(db, con, name) {
+db_create_queue_locked <- function(db, con, name, crash_strategy) {
   db_query(
     con,
     'CREATE TABLE ?tablename (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       title TEXT NOT NULL,
       message TEXT NOT NULL,
-      status TEXT DEFAULT "READY")',
+      status TEXT DEFAULT "READY",
+      requeued INTEGER DEFAULT 0)',
     tablename = db_queue_name(name)
   )
   db_query(
     con,
-    'INSERT INTO meta (name, created, lockdir) VALUES
-      (?name, DATE("now"), ?lockdir)',
+    'INSERT INTO meta (name, created, lockdir, requeue) VALUES
+      (?name, DATE("now"), ?lockdir, ?crash)',
     name = name,
-    lockdir = db_lockdir(db)
+    lockdir = db_lockdir(db),
+    crash = as.character(crash_strategy)
   )
   db_query(con, "COMMIT")
 }
@@ -250,15 +257,38 @@ db_clean_crashed <- function(con, queue) {
     )
     if (! identical(x, "busy")) {
       try_silent(dbDisconnect(lcon))
-      db_execute(
-        con, 'UPDATE ?tablename SET status = "READY" WHERE id = ?id',
-        tablename = db_queue_name(queue),
-        id = work$id[i]
-      )
+      if (meta$requeue == "fail" || meta$requeue == "requeue") {
+        ## Always fail, or always requeue
+        status <- if (meta$requeue == "fail") "FAILED" else "READY"
+        db_clean_crashed_update(con, queue, work$id[i], status)
+
+      } else if (as.numeric(work$requeued[i]) >= as.numeric(meta$requeue)) {
+        ## Requeued too many times
+        db_clean_crashed_update(con, queue, work$id[i], "FAILED")
+
+      } else {
+        ## Can still requeue
+        db_clean_crashed_update(con, queue, work$id[i], "READY")
+        db_execute(
+          con,
+          'UPDATE ?tablename SET requeued = requeued + 1 WHERE id = ?id',
+          tablename = db_queue_name(queue),
+          id = work$id[i]
+        )
+      }
       unlink(lock)
     }
   }
   TRUE
+}
+
+db_clean_crashed_update <- function(con, queue, id, status) {
+  db_execute(
+    con, 'UPDATE ?tablename SET status = ?status WHERE id = ?id',
+    tablename = db_queue_name(queue),
+    id = id,
+    status = status
+  )
 }
 
 #' Consume a message from a message queue
