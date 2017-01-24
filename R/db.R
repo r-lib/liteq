@@ -4,7 +4,9 @@
 #' @importFrom RSQLite SQLite
 
 db_connect <- function(..., synchronous = NULL) {
-  dbConnect(SQLite(), synchronous = synchronous, ...)
+  con <- dbConnect(SQLite(), synchronous = synchronous, ...)
+  dbGetQuery(con, "PRAGMA busy_timeout = 1000")
+  con
 }
 
 #' The name of the default database
