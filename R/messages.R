@@ -47,6 +47,8 @@ message_lock_file <- function(lockdir, queue, id) {
 #' @param title The title of the message. It can be the empty string.
 #' @param message The body of the message. It can be the empty string.
 #'
+#' @family liteq messages
+#' @seealso [liteq] for examples
 #' @export
 
 publish <- function(queue, title = "", message = "") {
@@ -60,6 +62,8 @@ publish <- function(queue, title = "", message = "") {
 #' @param queue The queue object.
 #' @return A message.
 #'
+#' @family liteq messages
+#' @seealso [liteq] for examples
 #' @export
 
 consume <- function(queue) {
@@ -73,6 +77,8 @@ consume <- function(queue) {
 #' @param queue The queue object.
 #' @return A message, or `NULL` if there is not message to work on.
 #'
+#' @family liteq messages
+#' @seealso [liteq] for examples
 #' @export
 
 try_consume <- function(queue) {
@@ -84,6 +90,8 @@ try_consume <- function(queue) {
 #' Acknowledge that the work on a message has finished successfully
 #'
 #' @param message The message object.
+#' @family liteq messages
+#' @seealso [liteq] for examples
 #' @export
 
 ack <- function(message) {
@@ -93,6 +101,7 @@ ack <- function(message) {
 #' Report that the work on a message has failed
 #'
 #' @param message The message object.
+#' @seealso [liteq] for examples
 #' @export
 
 nack <- function(message) {
@@ -113,6 +122,8 @@ print.liteq_message <- function(x, ...) {
 #' @param queue The queue object.
 #' @return Data frame with columns: `id`, `title`, `status`.
 #'
+#' @family liteq messages
+#' @seealso [liteq] for examples
 #' @export
 
 list_messages <- function(queue) {
@@ -124,6 +135,8 @@ list_messages <- function(queue) {
 #' @param queue The queue object.
 #' @return Data frame with columns: `id`, `title`, `status`.
 #'
+#' @family liteq messages
+#' @seealso [liteq] for examples
 #' @export
 
 list_failed_messages <- function(queue) {
@@ -137,6 +150,8 @@ list_failed_messages <- function(queue) {
 #'   failed messages will be requeued.
 #' @return The list of the requeued messages.
 #'
+#' @family liteq messages
+#' @seealso [liteq] for examples
 #' @export
 
 requeue_failed_messages <- function(queue, id = NULL) {
@@ -150,6 +165,8 @@ requeue_failed_messages <- function(queue, id = NULL) {
 #' @param id Ids of the messages to requeue. If it is `NULL`, then all
 #'   failed messages will be removed.
 #'
+#' @family liteq messages
+#' @seealso [liteq] for examples
 #' @export
 
 remove_failed_messages <- function(queue, id = NULL) {

@@ -14,3 +14,9 @@ delete_queue(queue, force = FALSE)
 \description{
 Delete a queue
 }
+\seealso{
+\link{liteq} for examples
+
+Other liteq queues: \code{\link{create_queue}},
+  \code{\link{ensure_queue}}, \code{\link{list_queues}}
+}

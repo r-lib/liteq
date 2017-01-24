@@ -12,6 +12,8 @@
 #'   a number, in which case they are requeued at most the specified number
 #'   of times.
 #'
+#' @family liteq queues
+#' @seealso [liteq] for examples
 #' @export
 
 create_queue <- function(name = NULL, db = default_db(),
@@ -32,6 +34,8 @@ create_queue <- function(name = NULL, db = default_db(),
 #' @param queue The queue to delete.
 #' @param force Whether to delete the queue even if it contains messages.
 #'
+#' @family liteq queues
+#' @seealso [liteq] for examples
 #' @export
 
 delete_queue <- function(queue, force = FALSE) {
@@ -45,6 +49,8 @@ delete_queue <- function(queue, force = FALSE) {
 #' @inheritParams create_queue
 #' @return The queue object.
 #'
+#' @family liteq queues
+#' @seealso [liteq] for examples
 #' @export
 
 ensure_queue <- function(name, db = default_db(),
@@ -60,6 +66,8 @@ ensure_queue <- function(name, db = default_db(),
 #' @param db The queue database to query.
 #' @return A list of `liteq_queue` objects.
 #'
+#' @family liteq queues
+#' @seealso [liteq] for examples
 #' @export
 
 list_queues <- function(db = default_db()) {

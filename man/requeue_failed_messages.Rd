@@ -18,3 +18,13 @@ The list of the requeued messages.
 \description{
 Requeue failed messages
 }
+\seealso{
+\link{liteq} for examples
+
+Other liteq messages: \code{\link{ack}},
+  \code{\link{consume}},
+  \code{\link{list_failed_messages}},
+  \code{\link{list_messages}}, \code{\link{publish}},
+  \code{\link{remove_failed_messages}},
+  \code{\link{try_consume}}
+}

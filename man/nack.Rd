@@ -12,3 +12,6 @@ nack(message)
 \description{
 Report that the work on a message has failed
 }
+\seealso{
+\link{liteq} for examples
+}

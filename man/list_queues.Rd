@@ -15,3 +15,9 @@ A list of \code{liteq_queue} objects.
 \description{
 List all queues in a database
 }
+\seealso{
+\link{liteq} for examples
+
+Other liteq queues: \code{\link{create_queue}},
+  \code{\link{delete_queue}}, \code{\link{ensure_queue}}
+}

@@ -16,3 +16,14 @@ publish(queue, title = "", message = "")
 \description{
 Publish a message in a queue
 }
+\seealso{
+\link{liteq} for examples
+
+Other liteq messages: \code{\link{ack}},
+  \code{\link{consume}},
+  \code{\link{list_failed_messages}},
+  \code{\link{list_messages}},
+  \code{\link{remove_failed_messages}},
+  \code{\link{requeue_failed_messages}},
+  \code{\link{try_consume}}
+}

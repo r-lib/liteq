@@ -15,3 +15,13 @@ Data frame with columns: \code{id}, \code{title}, \code{status}.
 \description{
 List failed messages in a queue
 }
+\seealso{
+\link{liteq} for examples
+
+Other liteq messages: \code{\link{ack}},
+  \code{\link{consume}}, \code{\link{list_messages}},
+  \code{\link{publish}},
+  \code{\link{remove_failed_messages}},
+  \code{\link{requeue_failed_messages}},
+  \code{\link{try_consume}}
+}
