@@ -52,6 +52,9 @@ message_lock_file <- function(lockdir, queue, id) {
 #' @export
 
 publish <- function(queue, title = "", message = "") {
+  assert_that(is_queue(queue))
+  assert_that(is_string(title))
+  assert_that(is_string(message))
   db_publish(queue$db, queue$name, title, message)
 }
 
@@ -67,6 +70,7 @@ publish <- function(queue, title = "", message = "") {
 #' @export
 
 consume <- function(queue) {
+  assert_that(is_queue(queue))
   msg <- db_consume(queue$db, queue$name)
   make_message(msg$msg$id, msg$msg$title, msg$msg$message, msg$db,
                msg$queue, msg$lockdir)
@@ -82,6 +86,7 @@ consume <- function(queue) {
 #' @export
 
 try_consume <- function(queue) {
+  assert_that(is_queue(queue))
   msg <- db_try_consume(queue$db, queue$name)
   make_message(msg$msg$id, msg$msg$title, msg$msg$message, msg$db,
                msg$queue, msg$lockdir)
@@ -95,6 +100,7 @@ try_consume <- function(queue) {
 #' @export
 
 ack <- function(message) {
+  assert_that(is_message(message))
   db_ack(message$db, message$queue, message$id, message$lock, TRUE)
 }
 
@@ -105,6 +111,7 @@ ack <- function(message) {
 #' @export
 
 nack <- function(message) {
+  assert_that(is_message(message))
   db_ack(message$db, message$queue, message$id, message$lock, FALSE)
 }
 
@@ -127,6 +134,7 @@ print.liteq_message <- function(x, ...) {
 #' @export
 
 list_messages <- function(queue) {
+  assert_that(is_queue(queue))
   db_list_messages(queue$db, queue$name)
 }
 
@@ -140,6 +148,7 @@ list_messages <- function(queue) {
 #' @export
 
 list_failed_messages <- function(queue) {
+  assert_that(is_queue(queue))
   db_list_messages(queue$db, queue$name, failed = TRUE)
 }
 
@@ -155,6 +164,8 @@ list_failed_messages <- function(queue) {
 #' @export
 
 requeue_failed_messages <- function(queue, id = NULL) {
+  assert_that(is_queue(queue))
+  assert_that(is_message_ids_or_null(id))
   msgs <- db_requeue_failed_messages(queue$db, queue$name, id)
   ## TODO: make_message
 }
@@ -170,5 +181,7 @@ requeue_failed_messages <- function(queue, id = NULL) {
 #' @export
 
 remove_failed_messages <- function(queue, id = NULL) {
+  assert_that(is_queue(queue))
+  assert_that(is_message_ids_or_null(id))
   db_remove_failed_messages(queue$db, queue$name, id)
 }

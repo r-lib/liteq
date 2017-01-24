@@ -14,6 +14,7 @@ BugReports: https://github.com/gaborcsardi/liteq/issues
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 5.0.1.9000
 Imports:
+    assertthat,
     DBI,
     rappdirs,
     RSQLite

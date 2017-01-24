@@ -19,7 +19,9 @@
 create_queue <- function(name = NULL, db = default_db(),
                          crash_strategy = "fail") {
 
-  assert_crash_strategy(crash_strategy)
+  assert_that(is_string_or_null(name))
+  assert_that(is_path(db))
+  assert_that(is_crash_strategy(crash_strategy))
 
   name <- name %||% random_queue_name()
 
@@ -39,6 +41,8 @@ create_queue <- function(name = NULL, db = default_db(),
 #' @export
 
 delete_queue <- function(queue, force = FALSE) {
+  assert_that(is_queue(queue))
+  assert_that(is_flag(force))
   ## TODO
 }
 
@@ -55,7 +59,10 @@ delete_queue <- function(queue, force = FALSE) {
 
 ensure_queue <- function(name, db = default_db(),
                          crash_strategy = "fail") {
-  assert_crash_strategy(crash_strategy)
+  assert_that(is_string(name))
+  assert_that(is_path(db))
+  assert_that(is_crash_strategy(crash_strategy))
+
   ensure_db(db)
   db_ensure_queue(name, db, crash_strategy)
   make_queue(name, db)
@@ -71,6 +78,7 @@ ensure_queue <- function(name, db = default_db(),
 #' @export
 
 list_queues <- function(db = default_db()) {
+  assert_that(is_path(db))
   ensure_db(db)
   lapply(db_list_queues(db)$name, make_queue, db = db)
 }
