@@ -17,7 +17,9 @@ knitr::opts_chunk$set(
 [![Coverage Status](https://img.shields.io/codecov/c/github/gaborcsardi/liteq/master.svg)](https://codecov.io/github/gaborcsardi/liteq?branch=master)
 
 Temporary and permanent message queues for R. Built on top of SQLite
-databases.
+databases. 'SQLite' provides locking, and makes it possible to detect
+crashed consumers. Crashed jobs can be automatically marked as "failed",
+or requeued, potentially a limited number of times.
 
 ## Installation
 
@@ -94,8 +96,7 @@ message object, to notify the queue that it is safe to remove the message.
 If the consumer fails to process a message, it can call `nack()` (negative
 ackowledgement) on the message object. Then the status of the message will
 be set to `"FAILED"`. Failed messages can be removed from the queue, or
-requeued again, depending on the application. (This functionality will be
-added later.)
+requeued again, depending on the application.
 
 ```{r}
 ack(msg)

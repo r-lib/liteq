@@ -4,7 +4,9 @@ Version: 0.0.0.9000
 Author: Gábor Csárdi
 Maintainer: Gábor Csárdi <csardi.gabor@gmail.com>
 Description: Temporary and permanent message queues for R. Built on top of
-    'SQLite' databases.
+    'SQLite' databases. 'SQLite' provides locking, and makes it possible
+    to detect crashed consumers. Crashed jobs can be automatically marked
+    as "failed", or requeued, potentially a limited number of times.
 License: MIT + file LICENSE
 LazyData: true
 URL: https://github.com/gaborcsardi/liteq#readme
