@@ -211,7 +211,7 @@ db_try_consume <- function(db, queue, crashed = TRUE, con = NULL) {
       name = queue
     )$lockdir
     db_execute(con, "COMMIT")
-    return(make_message(msg$id, msg$title, msg$message, db, queue, lockdir))
+    return(list(msg = msg, db = db, queue = queue, lockdir = lockdir))
   }
 
   ## Otherwise we need to check on crashed workers

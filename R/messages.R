@@ -18,6 +18,7 @@
 #' @keywords internal
 
 make_message <- function(id, title, message, db, queue, lockdir) {
+  if (is.null(id)) return(NULL)
   dir.create(lockdir, recursive = TRUE, showWarnings = FALSE)
   lock <- message_lock_file(lockdir, queue, id)
   con <- db_connect(lock)
@@ -62,7 +63,9 @@ publish <- function(queue, title = "", message = "") {
 #' @export
 
 consume <- function(queue) {
-  db_consume(queue$db, queue$name)
+  msg <- db_consume(queue$db, queue$name)
+  make_message(msg$msg$id, msg$msg$title, msg$msg$message, msg$db,
+               msg$queue, msg$lockdir)
 }
 
 #' Consume a message if there is one available
@@ -73,7 +76,9 @@ consume <- function(queue) {
 #' @export
 
 try_consume <- function(queue) {
-  db_try_consume(queue$db, queue$name)
+  msg <- db_try_consume(queue$db, queue$name)
+  make_message(msg$msg$id, msg$msg$title, msg$msg$message, msg$db,
+               msg$queue, msg$lockdir)
 }
 
 #' Acknowledge that the work on a message has finished successfully
