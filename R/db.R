@@ -1,6 +1,6 @@
 
 #' @importFrom DBI dbGetQuery sqlInterpolate dbConnect dbDisconnect
-#' @importFrom DBI dbExecute
+#' @importFrom DBI dbExecute dbWithTransaction
 #' @importFrom RSQLite SQLite
 
 db_connect <- function(..., synchronous = NULL) {
@@ -326,10 +326,76 @@ db_ack <- function(db, queue, id, lock, success) {
   invisible()
 }
 
-db_list_messages <- function(db, queue) {
+db_list_messages <- function(db, queue, failed = FALSE) {
+
+  q <- "SELECT id, title, status FROM ?tablename"
+  if (failed) q <- paste(q, "WHERE status = \"FAILED\"")
+
+  do_db(db, q, tablename = db_queue_name(queue))
+}
+
+db_requeue_failed_messages <- function(db, queue, id) {
+  if (is.null(id)) {
+    db_requeue_all_failed_messages(db, queue)
+  } else {
+    db_requeue_some_failed_messages(db, queue, id)
+  }
+}
+
+db_requeue_all_failed_messages <- function(db, queue) {
   do_db(
     db,
-    "SELECT id, title, status FROM ?tablename",
+    "UPDATE ?tablename SET status = \"READY\" WHERE status = \"FAILED\"",
     tablename = db_queue_name(queue)
   )
+}
+
+db_requeue_some_failed_messages <- function(db, queue, id) {
+  con <- db_connect(db)
+  on.exit(dbDisconnect(con))
+  dbWithTransaction(con, {
+    for (id1 in id) {
+      db_execute(
+        con,
+        "UPDATE ?tablename
+         SET status = \"READY\"
+         WHERE status = \"FAILED\" AND id = ?id",
+        tablename = db_queue_name(queue),
+        id = id1
+      )
+    }
+  })
+}
+
+db_remove_failed_messages <- function(db, queue, id) {
+  if (is.null(id)) {
+    db_remove_all_failed_messages(db, queue)
+  } else {
+    db_remove_some_failed_messages(db, queue, id)
+  }
+  invisible()
+}
+
+db_remove_all_failed_messages <- function(db, queue) {
+  do_db(
+    db,
+    "DELETE FROM ?tablename WHERE status = \"FAILED\"",
+    tablename = db_queue_name(queue)
+  )
+}
+
+db_remove_some_failed_messages <- function(db, queue, id) {
+  con <- db_connect(db)
+  on.exit(dbDisconnect(con))
+  dbWithTransaction(con, {
+    for (id1 in id) {
+      db_execute(
+        con,
+        "DELETE FROM ?tablename
+         WHERE status = \"FAILED\" AND id = ?id",
+        tablename = db_queue_name(queue),
+        id = id1
+      )
+    }
+  })
 }

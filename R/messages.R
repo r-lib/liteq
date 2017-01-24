@@ -118,3 +118,40 @@ print.liteq_message <- function(x, ...) {
 list_messages <- function(queue) {
   db_list_messages(queue$db, queue$name)
 }
+
+#' List failed messages in a queue
+#'
+#' @param queue The queue object.
+#' @return Data frame with columns: `id`, `title`, `status`.
+#'
+#' @export
+
+list_failed_messages <- function(queue) {
+  db_list_messages(queue$db, queue$name, failed = TRUE)
+}
+
+#' Requeue failed messages
+#'
+#' @param queue The queue object.
+#' @param id Ids of the messages to requeue. If it is `NULL`, then all
+#'   failed messages will be requeued.
+#' @return The list of the requeued messages.
+#'
+#' @export
+
+requeue_failed_messages <- function(queue, id = NULL) {
+  msgs <- db_requeue_failed_messages(queue$db, queue$name, id)
+  ## TODO: make_message
+}
+
+#' Remove failed messages from the queue
+#'
+#' @param queue The queue object.
+#' @param id Ids of the messages to requeue. If it is `NULL`, then all
+#'   failed messages will be removed.
+#'
+#' @export
+
+remove_failed_messages <- function(queue, id = NULL) {
+  db_remove_failed_messages(queue$db, queue$name, id)
+}
