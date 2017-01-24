@@ -12,9 +12,6 @@ requeue_failed_messages(queue, id = NULL)
 \item{id}{Ids of the messages to requeue. If it is \code{NULL}, then all
 failed messages will be requeued.}
 }
-\value{
-The list of the requeued messages.
-}
 \description{
 Requeue failed messages
 }

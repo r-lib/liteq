@@ -370,6 +370,7 @@ db_requeue_failed_messages <- function(db, queue, id) {
   } else {
     db_requeue_some_failed_messages(db, queue, id)
   }
+  invisible()
 }
 
 db_requeue_all_failed_messages <- function(db, queue) {

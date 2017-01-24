@@ -157,7 +157,6 @@ list_failed_messages <- function(queue) {
 #' @param queue The queue object.
 #' @param id Ids of the messages to requeue. If it is `NULL`, then all
 #'   failed messages will be requeued.
-#' @return The list of the requeued messages.
 #'
 #' @family liteq messages
 #' @seealso [liteq] for examples
@@ -166,8 +165,7 @@ list_failed_messages <- function(queue) {
 requeue_failed_messages <- function(queue, id = NULL) {
   assert_that(is_queue(queue))
   assert_that(is_message_ids_or_null(id))
-  msgs <- db_requeue_failed_messages(queue$db, queue$name, id)
-  ## TODO: make_message
+  db_requeue_failed_messages(queue$db, queue$name, id)
 }
 
 #' Remove failed messages from the queue
