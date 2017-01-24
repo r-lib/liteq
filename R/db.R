@@ -429,3 +429,30 @@ db_remove_some_failed_messages <- function(db, queue, id) {
     }
   })
 }
+
+db_delete_queue <- function(db, queue, force) {
+  con <- db_connect(db)
+  on.exit(dbDisconnect(con))
+  dbWithTransaction(con, {
+    num <- db_query(
+      con,
+      "SELECT COUNT(*) FROM ?tablename",
+      tablename = db_queue_name(queue)
+    )
+
+    if (num > 0 && ! force) {
+      stop("Unwilling to delete non-empty queue, consider 'force = TRUE'")
+    }
+
+    db_execute(
+      con,
+      "DELETE FROM meta WHERE name = ?name",
+      name = queue
+    )
+    db_execute(
+      con,
+      "DROP TABLE ?tablename",
+      tablename = db_queue_name(queue)
+    )
+  })
+}

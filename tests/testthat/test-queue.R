@@ -24,7 +24,18 @@ test_that("ensure_queue", {
 })
 
 test_that("delete_queue", {
-  ## TODO
+  db <- tempfile()
+  q <- create_queue("foo", db = db)
+
+  delete_queue(q)
+  expect_false(q$name %in% db_list_queues(db)$name)
+
+  q <- create_queue("foo", db = db)
+  publish(q, title = "title", message = "")
+  expect_error(delete_queue(q), "Unwilling to delete non-empty queue")
+  expect_true(q$name %in% db_list_queues(db)$name)
+  expect_silent(delete_queue(q, force = TRUE))
+  expect_false(q$name %in% db_list_queues(db)$name)
 })
 
 test_that("list_queues", {

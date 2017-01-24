@@ -43,7 +43,7 @@ create_queue <- function(name = NULL, db = default_db(),
 delete_queue <- function(queue, force = FALSE) {
   assert_that(is_queue(queue))
   assert_that(is_flag(force))
-  ## TODO
+  db_delete_queue(queue$db, queue$name, force)
 }
 
 #' Make sure that a queue exists
