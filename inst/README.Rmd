@@ -19,7 +19,7 @@ knitr::opts_chunk$set(
 Temporary and permanent message queues for R. Built on top of SQLite
 databases. 'SQLite' provides locking, and makes it possible to detect
 crashed consumers. Crashed jobs can be automatically marked as "failed",
-or requeued, potentially a limited number of times.
+or put back in the queue again, potentially a limited number of times.
 
 ## Installation
 
@@ -96,7 +96,7 @@ message object, to notify the queue that it is safe to remove the message.
 If the consumer fails to process a message, it can call `nack()` (negative
 ackowledgement) on the message object. Then the status of the message will
 be set to `"FAILED"`. Failed messages can be removed from the queue, or
-requeued again, depending on the application.
+put back in the queue again, depending on the application.
 
 ```{r}
 ack(msg)
@@ -115,8 +115,8 @@ try_consume(q)
 ### Crashed workers
 
 If a worker crashes without calling either `ack()` or `nack()` on a message,
-then this messages will be requeued the next time a message is requested
-from the queue.
+then this messages will be put back in the queue the next time a message is
+requested from the queue.
 
 To make this possible, each delivered message keeps an open connection to
 a lock file, and crashed workers are found by the absense of this open
