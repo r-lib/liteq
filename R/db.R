@@ -5,7 +5,7 @@
 
 db_connect <- function(..., synchronous = NULL) {
   con <- dbConnect(SQLite(), synchronous = synchronous, ...)
-  dbGetQuery(con, "PRAGMA busy_timeout = 1000")
+  dbExecute(con, "PRAGMA busy_timeout = 1000")
   con
 }
 
@@ -63,13 +63,19 @@ do_db <- function(db, query, ...) {
   db_query(con, query, ...)
 }
 
+do_db_execute <- function(db, query, ...) {
+  con <- db_connect(db)
+  on.exit(dbDisconnect(con))
+  db_execute(con, query, ...)
+}
+
 db_lock <- function(con) {
-  dbGetQuery(con, "PRAGMA busy_timeout = 1000")
+  dbExecute(con, "PRAGMA busy_timeout = 1000")
   done <- FALSE
   while (!done) {
     tryCatch(
       {
-        dbGetQuery(con, "BEGIN EXCLUSIVE")
+        dbExecute(con, "BEGIN EXCLUSIVE")
         done <- TRUE
       },
       error = function(e) NULL
@@ -78,7 +84,7 @@ db_lock <- function(con) {
 }
 
 db_create_db <- function(db) {
-  do_db(
+  do_db_execute(
     db,
     "CREATE TABLE meta (
        name TEXT PRIMARY KEY,
@@ -94,7 +100,7 @@ db_create_db <- function(db) {
 db_ensure_queue <- function(name, db, crash_strategy) {
   con <- db_connect(db)
   on.exit(dbDisconnect(con), add = TRUE)
-  db_query(con, "BEGIN EXCLUSIVE")
+  db_execute(con, "BEGIN EXCLUSIVE")
   tablename <- db_queue_name(name)
   if (!dbExistsTable(con, tablename)) {
     db_create_queue_locked(db, con, name, crash_strategy)
@@ -121,12 +127,12 @@ db_ensure_queue <- function(name, db, crash_strategy) {
 db_create_queue <- function(name, db, crash_strategy) {
   con <- db_connect(db)
   on.exit(dbDisconnect(con), add = TRUE)
-  db_query(con, "BEGIN EXCLUSIVE")
+  db_execute(con, "BEGIN EXCLUSIVE")
   db_create_queue_locked(db, con, name, crash_strategy)
 }
 
 db_create_queue_locked <- function(db, con, name, crash_strategy) {
-  db_query(
+  db_execute(
     con,
     'CREATE TABLE ?tablename (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -136,7 +142,7 @@ db_create_queue_locked <- function(db, con, name, crash_strategy) {
       requeued INTEGER DEFAULT 0)',
     tablename = db_queue_name(name)
   )
-  db_query(
+  db_execute(
     con,
     'INSERT INTO meta (name, created, lockdir, requeue) VALUES
       (?name, DATE("now"), ?lockdir, ?crash)',
@@ -144,7 +150,7 @@ db_create_queue_locked <- function(db, con, name, crash_strategy) {
     lockdir = db_lockdir(db),
     crash = as.character(crash_strategy)
   )
-  db_query(con, "COMMIT")
+  db_execute(con, "COMMIT")
 }
 
 db_lockdir <- function(db) {
@@ -159,7 +165,7 @@ db_list_queues <- function(db) {
 }
 
 db_publish <- function(db, queue, title, message) {
-  do_db(
+  do_db_execute(
     db,
     "INSERT INTO ?tablename (title, message)
      VALUES (?title, ?message)",
@@ -208,7 +214,7 @@ db_try_consume <- function(db, queue, crashed = TRUE, con = NULL) {
     tablename = db_queue_name(queue)
   )
   if (nrow(msg) == 1) {
-    db_query(
+    db_execute(
       con, 'UPDATE ?tablename SET status = "WORKING" WHERE id = ?id',
       tablename = db_queue_name(queue),
       id = msg$id
@@ -374,7 +380,7 @@ db_requeue_failed_messages <- function(db, queue, id) {
 }
 
 db_requeue_all_failed_messages <- function(db, queue) {
-  do_db(
+  do_db_execute(
     db,
     "UPDATE ?tablename SET status = \"READY\" WHERE status = \"FAILED\"",
     tablename = db_queue_name(queue)
@@ -408,7 +414,7 @@ db_remove_failed_messages <- function(db, queue, id) {
 }
 
 db_remove_all_failed_messages <- function(db, queue) {
-  do_db(
+  do_db_execute(
     db,
     "DELETE FROM ?tablename WHERE status = \"FAILED\"",
     tablename = db_queue_name(queue)
