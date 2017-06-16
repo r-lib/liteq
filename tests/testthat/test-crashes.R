@@ -10,7 +10,7 @@ test_that("requeueing crashed consumers", {
 
   ## now we simulate a crash, so the connection embedded in `msg` is closed
   rm(msg)
-  gc()
+  suppressWarnings(gc())
 
   ## now, if we try to get a message, the same message must be served again
   msg <- try_consume(q)

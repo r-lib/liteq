@@ -20,7 +20,7 @@ test_that("db_query", {
   ensure_db(db)
   con <- dbConnect(SQLite(), db, synchronous = NULL)
   on.exit(dbDisconnect(con))
-  db_query(
+  db_execute(
     con, 'INSERT INTO ?table (name) VALUES (?value)',
     table = "meta", value = "foobar"
   )
@@ -36,7 +36,7 @@ test_that("db_execute", {
   ensure_db(db)
   con <- dbConnect(SQLite(), db, synchronous = NULL)
   on.exit(dbDisconnect(con))
-  db_query(
+  db_execute(
     con, 'INSERT INTO ?table (name) VALUES (?value)',
     table = "meta", value = "foobar"
   )
@@ -54,7 +54,7 @@ test_that("do_db", {
   db <- tempfile()
   on.exit(unlink(db))
   ensure_db(db)
-  do_db(
+  do_db_execute(
     db, 'INSERT INTO ?table (name) VALUES (?value)',
     table = "meta", value = "foobar"
   )
