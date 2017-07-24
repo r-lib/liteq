@@ -9,8 +9,8 @@ Description: Temporary and permanent message queues for R. Built on top of
     as "failed", or put in the queue again, potentially a limited number of times.
 License: MIT + file LICENSE
 LazyData: true
-URL: https://github.com/gaborcsardi/liteq#readme
-BugReports: https://github.com/gaborcsardi/liteq/issues
+URL: https://github.com/r-lib/liteq#readme
+BugReports: https://github.com/r-lib/liteq/issues
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 5.0.1.9000
 Imports:
