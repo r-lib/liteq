@@ -6,7 +6,8 @@
 #' @docType package
 #' @name liteq
 #' @examples
-#' # A temporary queue
+#' # We don't run this, because it write to the cache directory
+#' \dontrun{
 #' db <- tempfile()
 #' q <- ensure_queue("jobs", db = db)
 #' q
@@ -29,5 +30,6 @@
 #'
 #' # No more messages
 #' try_consume(q)
+#' }
 
 NULL

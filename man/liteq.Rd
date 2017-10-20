@@ -9,7 +9,8 @@
 Message queues for R. Built on top of 'SQLite' databases.
 }
 \examples{
-# A temporary queue
+# We don't run this, because it write to the cache directory
+\dontrun{
 db <- tempfile()
 q <- ensure_queue("jobs", db = db)
 q
@@ -32,4 +33,5 @@ list_messages(q)
 
 # No more messages
 try_consume(q)
+}
 }

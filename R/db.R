@@ -155,7 +155,7 @@ db_create_queue_locked <- function(db, con, name, crash_strategy) {
 
 db_lockdir <- function(db) {
   file.path(
-    user_cache_dir(appname = "liteq"),
+    Sys.getenv("LITEQ_CACHE_DIR", user_cache_dir(appname = "liteq")),
     paste0(basename(db), "-", random_lock_name())
   )
 }
