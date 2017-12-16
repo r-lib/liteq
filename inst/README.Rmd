@@ -69,7 +69,7 @@ list_messages(q)
 ```
 
 A `liteq` message has a title, which is a string scalar, and the message
-body itself is a sting scalar as well. To use more complex data types in
+body itself is a string scalar as well. To use more complex data types in
 messages, you need to serialize them using the `serialize()` function (set
 `ascii` to `TRUE`!), or convert them to JSON with the `jsonlite` package.
 
