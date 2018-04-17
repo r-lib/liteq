@@ -16,6 +16,7 @@
 #' # Publish two messages
 #' publish(q, title = "First message", message = "Hello world!")
 #' publish(q, title = "Second message", message = "Hello again!")
+#' is_empty(q)
 #' list_messages(q)
 #'
 #' # Consume one
@@ -29,6 +30,7 @@
 #' list_messages(q)
 #'
 #' # No more messages
+#' is_empty(q)
 #' try_consume(q)
 #' }
 
