@@ -21,7 +21,8 @@ Check if a queue is empty
 Other liteq messages: \code{\link{ack}},
   \code{\link{consume}},
   \code{\link{list_failed_messages}},
-  \code{\link{list_messages}}, \code{\link{publish}},
+  \code{\link{list_messages}}, \code{\link{message_count}},
+  \code{\link{publish}},
   \code{\link{remove_failed_messages}},
   \code{\link{requeue_failed_messages}},
   \code{\link{try_consume}}

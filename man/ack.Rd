@@ -18,7 +18,8 @@ Acknowledge that the work on a message has finished successfully
 Other liteq messages: \code{\link{consume}},
   \code{\link{is_empty}},
   \code{\link{list_failed_messages}},
-  \code{\link{list_messages}}, \code{\link{publish}},
+  \code{\link{list_messages}}, \code{\link{message_count}},
+  \code{\link{publish}},
   \code{\link{remove_failed_messages}},
   \code{\link{requeue_failed_messages}},
   \code{\link{try_consume}}

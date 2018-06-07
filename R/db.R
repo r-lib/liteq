@@ -362,12 +362,18 @@ db_ack <- function(db, queue, id, lock, success) {
   invisible()
 }
 
-db_is_empty <- function(db, queue, failed = FALSE) {
+db_message_count <- function(db, queue, failed = FALSE) {
 
   q <- "SELECT COUNT(id) FROM ?tablename LIMIT 1"
   if (failed) q <- paste(q, "WHERE status = \"FAILED\"")
 
-  do_db(db, q, tablename = db_queue_name(queue))[1, 1] < 1
+  do_db(db, q, tablename = db_queue_name(queue))[1, 1]
+}
+
+db_is_empty <- function(db, queue, failed = FALSE) {
+
+  db_message_count(db = db, queue = queue, failed = failed) < 1
+
 }
 
 db_list_messages <- function(db, queue, failed = FALSE) {

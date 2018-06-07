@@ -17,6 +17,7 @@
 #' publish(q, title = "First message", message = "Hello world!")
 #' publish(q, title = "Second message", message = "Hello again!")
 #' is_empty(q)
+#' message_count(q)
 #' list_messages(q)
 #'
 #' # Consume one
