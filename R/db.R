@@ -354,6 +354,7 @@ db_ack <- function(db, queue, id, lock, success) {
     name = queue
   )$lockdir
 
+  try_silent(dbDisconnect(lock))
   lock <- message_lock_file(lockdir, queue, id)
   unlink(lock)
 
