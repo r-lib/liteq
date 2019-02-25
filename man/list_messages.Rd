@@ -26,3 +26,4 @@ Other liteq messages: \code{\link{ack}},
   \code{\link{requeue_failed_messages}},
   \code{\link{try_consume}}
 }
+\concept{liteq messages}

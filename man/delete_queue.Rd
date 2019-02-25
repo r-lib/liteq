@@ -20,3 +20,4 @@ Delete a queue
 Other liteq queues: \code{\link{create_queue}},
   \code{\link{ensure_queue}}, \code{\link{list_queues}}
 }
+\concept{liteq queues}

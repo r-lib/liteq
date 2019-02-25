@@ -28,3 +28,4 @@ It also creates the database, if it does not exist.
 Other liteq queues: \code{\link{delete_queue}},
   \code{\link{ensure_queue}}, \code{\link{list_queues}}
 }
+\concept{liteq queues}

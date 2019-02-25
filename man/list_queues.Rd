@@ -21,3 +21,4 @@ List all queues in a database
 Other liteq queues: \code{\link{create_queue}},
   \code{\link{delete_queue}}, \code{\link{ensure_queue}}
 }
+\concept{liteq queues}

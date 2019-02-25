@@ -5,9 +5,9 @@
 #'
 #' @docType package
 #' @name liteq
-#' @examples
+#' @section Examples:
+#' ```
 #' # We don't run this, because it write to the cache directory
-#' \dontrun{
 #' db <- tempfile()
 #' q <- ensure_queue("jobs", db = db)
 #' q
@@ -30,6 +30,9 @@
 #'
 #' # No more messages
 #' try_consume(q)
-#' }
+#' ```
+#'
+#' @examples
+#' ## See the manual page
 
 NULL

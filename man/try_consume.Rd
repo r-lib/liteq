@@ -25,3 +25,4 @@ Other liteq messages: \code{\link{ack}},
   \code{\link{remove_failed_messages}},
   \code{\link{requeue_failed_messages}}
 }
+\concept{liteq messages}
