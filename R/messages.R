@@ -124,6 +124,34 @@ print.liteq_message <- function(x, ...) {
   invisible(x)
 }
 
+#' Get the number of messages in a queue.
+#'
+#' @param queue The queue object.
+#' @return Number of messages in the queue.
+#'
+#' @family liteq messages
+#' @seealso [liteq] for examples
+#' @export
+
+message_count <- function(queue) {
+  assert_that(is_queue(queue))
+  db_message_count(queue$db, queue$name)
+}
+
+#' Check if a queue is empty
+#'
+#' @param queue The queue object.
+#' @return Logical, whether the queue is empty.
+#'
+#' @family liteq messages
+#' @seealso [liteq] for examples
+#' @export
+
+is_empty <- function(queue) {
+  assert_that(is_queue(queue))
+  db_is_empty(queue$db, queue$name)
+}
+
 #' List all messages in a queue
 #'
 #' @param queue The queue object.

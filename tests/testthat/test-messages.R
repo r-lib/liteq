@@ -1,14 +1,18 @@
 
 context("messages")
 
-test_that("publish", {
+test_that("publish, is_empty, and message_count", {
   db <- tempfile()
   on.exit(unlink(db), add = TRUE)
   q <- ensure_queue("jobs", db = db)
+  expect_true(is_empty(q))
+  expect_equal(message_count(q), 0)
 
   for (i in 1:10) {
     publish(q, title = title <- as.character(i), message = text <- "MSG")
   }
+  expect_false(is_empty(q))
+  expect_equal(message_count(q), 10)
 })
 
 test_that("publish & consume", {
