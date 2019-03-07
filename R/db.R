@@ -36,13 +36,8 @@ default_db <- function() {
 #' @keywords internal
 
 ensure_db <- function(db) {
-  tryCatch(
-    do_db(db, "SELECT * FROM meta LIMIT 1"),
-    error = function(e) {
-      dir.create(dirname(db), recursive = TRUE, showWarnings = FALSE)
-      db_create_db(db)
-    }
-  )
+  dir.create(dirname(db), recursive = TRUE, showWarnings = FALSE)
+  db_create_db(db)
 }
 
 db_queue_name <- function(name) {
@@ -86,7 +81,7 @@ db_lock <- function(con) {
 db_create_db <- function(db) {
   do_db_execute(
     db,
-    "CREATE TABLE meta (
+    "CREATE TABLE IF NOT EXISTS meta (
        name TEXT PRIMARY KEY,
        created TIMESTAMP,
        lockdir TEXT,
