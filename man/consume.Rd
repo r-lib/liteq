@@ -4,10 +4,13 @@
 \alias{consume}
 \title{Consume a message from a queue}
 \usage{
-consume(queue)
+consume(queue, poll_interval = 500)
 }
 \arguments{
 \item{queue}{The queue object.}
+
+\item{poll_interval}{Poll interval in milliseconds. How often to poll
+the queue for new jobs, if none are immediately available.}
 }
 \value{
 A message.

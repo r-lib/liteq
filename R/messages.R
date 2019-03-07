@@ -63,15 +63,17 @@ publish <- function(queue, title = "", message = "") {
 #' Blocks and waits for a message if there isn't one to work on currently.
 #'
 #' @param queue The queue object.
+#' @param poll_interval Poll interval in milliseconds. How often to poll
+#'    the queue for new jobs, if none are immediately available.
 #' @return A message.
 #'
 #' @family liteq messages
 #' @seealso [liteq] for examples
 #' @export
 
-consume <- function(queue) {
+consume <- function(queue, poll_interval = 500) {
   assert_that(is_queue(queue))
-  msg <- db_consume(queue$db, queue$name)
+  msg <- db_consume(queue$db, queue$name, poll_interval = poll_interval)
   make_message(msg$msg$id, msg$msg$title, msg$msg$message, msg$db,
                msg$queue, msg$lockdir)
 }
