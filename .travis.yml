@@ -12,3 +12,7 @@ r:
 
 after_success:
   - test $TRAVIS_R_VERSION_STRING = "release" && Rscript -e 'covr::codecov()'
+
+env:
+  global:
+  - _R_CHECK_SYSTEM_CLOCK_="FALSE"
