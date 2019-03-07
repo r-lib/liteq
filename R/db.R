@@ -94,7 +94,7 @@ db_create_db <- function(db) {
 db_ensure_queue <- function(name, db, crash_strategy) {
   con <- db_connect(db)
   on.exit(dbDisconnect(con), add = TRUE)
-  db_execute(con, "BEGIN EXCLUSIVE")
+  db_execute(con, "BEGIN")
   tablename <- db_queue_name(name)
   if (!dbExistsTable(con, tablename)) {
     db_create_queue_locked(db, con, name, crash_strategy)
@@ -121,7 +121,7 @@ db_ensure_queue <- function(name, db, crash_strategy) {
 db_create_queue <- function(name, db, crash_strategy) {
   con <- db_connect(db)
   on.exit(dbDisconnect(con), add = TRUE)
-  db_execute(con, "BEGIN EXCLUSIVE")
+  db_execute(con, "BEGIN")
   db_create_queue_locked(db, con, name, crash_strategy)
 }
 
