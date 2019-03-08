@@ -1,11 +1,17 @@
 
+#' @importFrom DBI dbExecute
+
+db_set_timeout <- function(con) {
+  dbExecute(con, "PRAGMA busy_timeout = 10000")
+}
+
 #' @importFrom DBI dbGetQuery sqlInterpolate dbConnect dbDisconnect
 #' @importFrom DBI dbExecute dbWithTransaction
 #' @importFrom RSQLite SQLite
 
 db_connect <- function(..., synchronous = NULL) {
   con <- dbConnect(SQLite(), synchronous = synchronous, ...)
-  dbExecute(con, "PRAGMA busy_timeout = 1000")
+  db_set_timeout(con)
   con
 }
 
@@ -45,10 +51,12 @@ db_queue_name <- function(name) {
 }
 
 db_query <- function(con, query, ...) {
+  db_set_timeout(con)
   dbGetQuery(con, sqlInterpolate(con, query, ...))
 }
 
 db_execute <- function(con, query, ...) {
+  db_set_timeout(con)
   dbExecute(con, sqlInterpolate(con, query, ...))
 }
 

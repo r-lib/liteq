@@ -18,7 +18,8 @@ Imports:
     DBI,
     rappdirs,
     RSQLite
-Suggests: 
+Suggests:
+    callr,
     covr,
     testthat,
     withr
