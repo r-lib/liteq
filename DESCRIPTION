@@ -21,6 +21,7 @@ Imports:
 Suggests:
     callr,
     covr,
+    processx,
     testthat,
     withr
 Encoding: UTF-8
