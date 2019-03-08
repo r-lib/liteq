@@ -22,7 +22,7 @@ errors, then you can try to increase the timeout value.
 }
 
 \section{Examples}{
-\preformatted{# We don't run this, because it write to the cache directory
+\preformatted{# We don't run this, because it writes to the cache directory
 db <- tempfile()
 q <- ensure_queue("jobs", db = db)
 q

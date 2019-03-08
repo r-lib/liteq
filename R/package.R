@@ -18,7 +18,7 @@
 #' @name liteq
 #' @section Examples:
 #' ```
-#' # We don't run this, because it write to the cache directory
+#' # We don't run this, because it writes to the cache directory
 #' db <- tempfile()
 #' q <- ensure_queue("jobs", db = db)
 #' q
