@@ -2,7 +2,9 @@
 #' @importFrom DBI dbExecute
 
 db_set_timeout <- function(con) {
-  dbExecute(con, "PRAGMA busy_timeout = 10000")
+  timeout <- as.integer(Sys.getenv("R_LITEQ_BUSY_TIMOUT", "10000"))
+  if (is.na(timeout)) timeout <- 10000
+  dbExecute(con, sprintf("PRAGMA busy_timeout = %d", timeout))
 }
 
 #' @importFrom DBI dbGetQuery sqlInterpolate dbConnect dbDisconnect

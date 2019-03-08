@@ -1,6 +1,11 @@
 
 # 1.0.1.9000
 
+* Work around a SQLITE bug that resets the database busy timeout after a
+  successful query. Now we set the timeout after each database operation.
+  The timeout can now also be set via the `R_LITEQ_BUSY_TIEMOUT`
+  environment variable, and it defaults to 10 seconds, instead of 1 second.
+
 * `consume()` now has a `poll_interval` argument to set how often to poll
   the queue for new jobs.
 
