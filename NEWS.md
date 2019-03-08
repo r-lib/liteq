@@ -1,5 +1,5 @@
 
-# 1.0.1.9000
+# 1.1.0
 
 * Work around a SQLITE bug that resets the database busy timeout after a
   successful query. Now we set the timeout after each database operation.
