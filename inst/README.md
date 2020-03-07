@@ -19,7 +19,7 @@ or put back in the queue again, potentially a limited number of times.
 ## Installation
 
 ```r
-source("https://install-github.me/r-lib/liteq")
+install.packages("liteq")
 ```
 
 ## Introduction
