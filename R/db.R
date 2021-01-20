@@ -169,14 +169,20 @@ db_list_queues <- function(db) {
 }
 
 db_publish <- function(db, queue, title, message) {
-  do_db_execute(
-    db,
-    "INSERT INTO ?tablename (title, message)
-     VALUES (?title, ?message)",
-    tablename = db_queue_name(queue),
-    title = title,
-    message = message
-  )
+  con <- db_connect(db)
+  on.exit(dbDisconnect(con))
+  dbWithTransaction(con, {
+    for (i in seq_along(title)) {
+      db_execute(
+        con,
+        "INSERT INTO ?tablename (title, message)
+         VALUES (?title, ?message)",
+        tablename = db_queue_name(queue),
+        title = title[i],
+        message = message[i]
+      )
+    }
+  })
   invisible()
 }
 

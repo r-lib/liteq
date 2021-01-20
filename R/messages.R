@@ -41,11 +41,12 @@ message_lock_file <- function(lockdir, queue, id) {
   file.path(lockdir, paste0(queue, "-", id, ".lock"))
 }
 
-#' Publish a message in a queue
+#' Publish messages in a queue
 #'
 #' @param queue The queue object.
-#' @param title The title of the message. It can be the empty string.
-#' @param message The body of the message. It can be the empty string.
+#' @param title The title of the messages. It can be the empty string.
+#' @param message The body of the messages. It can be the empty string.
+#'   Must be the same length as `title`.
 #'
 #' @family liteq messages
 #' @seealso [liteq] for examples
@@ -53,8 +54,9 @@ message_lock_file <- function(lockdir, queue, id) {
 
 publish <- function(queue, title = "", message = "") {
   assert_that(is_queue(queue))
-  assert_that(is_string(title))
-  assert_that(is_string(message))
+  assert_that(is.character(title))
+  assert_that(is.character(message))
+  assert_that(length(title) == length(message))
   db_publish(queue$db, queue$name, title, message)
 }
 
