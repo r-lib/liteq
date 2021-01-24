@@ -1,4 +1,9 @@
 
+# 1.x.x
+
+* `publish()` now accepts multiple messages (note that `title` and `message`
+  must be of the same length) and publishes them in a single transaction (#25).
+
 # 1.1.0
 
 * Work around a SQLITE bug that resets the database busy timeout after a
