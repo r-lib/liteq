@@ -1,9 +1,15 @@
 
+# development version
+
+* Setting the `R_LITEQ_BUSY_TIMEOUT` environment variable now works
+  properly. Previously it was ignored and the timeout was set to
+  ten seconds (#24, @Enchufa2).
+
 # 1.1.0
 
 * Work around a SQLITE bug that resets the database busy timeout after a
   successful query. Now we set the timeout after each database operation.
-  The timeout can now also be set via the `R_LITEQ_BUSY_TIEMOUT`
+  The timeout can now also be set via the `R_LITEQ_BUSY_TIMEOUT`
   environment variable, and it defaults to 10 seconds, instead of 1 second.
 
 * `consume()` now has a `poll_interval` argument to set how often to poll
