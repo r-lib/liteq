@@ -1,7 +1,9 @@
 
-# 1.x.x
+# development version
 
-* Fix typo in `R_LITEQ_BUSY_TIMEOUT` environment variable (#24).
+* Setting the `R_LITEQ_BUSY_TIMEOUT` environment variable now works
+  properly. Previously it was ignored and the timeout was set to
+  ten seconds (#24, @Enchufa2).
 
 # 1.1.0
 
