@@ -25,7 +25,9 @@ It also creates the database, if it does not exist.
 \seealso{
 \link{liteq} for examples
 
-Other liteq queues: \code{\link{delete_queue}},
-  \code{\link{ensure_queue}}, \code{\link{list_queues}}
+Other liteq queues: 
+\code{\link{delete_queue}()},
+\code{\link{ensure_queue}()},
+\code{\link{list_queues}()}
 }
 \concept{liteq queues}

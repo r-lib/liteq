@@ -1,6 +1,10 @@
 
 # development version
 
+* `publish()` now accepts multiple messages (note that `title` and
+  `message` must be of the same length) and publishes them in a single
+  transaction (#25, @Enchufa2).
+
 * Setting the `R_LITEQ_BUSY_TIMEOUT` environment variable now works
   properly. Previously it was ignored and the timeout was set to
   ten seconds (#24, @Enchufa2).

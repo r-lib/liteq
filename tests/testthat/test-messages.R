@@ -8,9 +8,15 @@ test_that("publish, is_empty, and message_count", {
   expect_true(is_empty(q))
   expect_equal(message_count(q), 0)
 
-  for (i in 1:10) {
+  for (i in 1:5) {
     publish(q, title = title <- as.character(i), message = text <- "MSG")
   }
+
+  # title and message lengths must match
+  expect_error(publish(q, title = "one", message = c("one", "two")))
+
+  # multiple messages at once
+  publish(q, title = as.character(6:10), message = rep("MSG", 5))
   expect_false(is_empty(q))
   expect_equal(message_count(q), 10)
 })

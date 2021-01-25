@@ -2,29 +2,33 @@
 % Please edit documentation in R/messages.R
 \name{publish}
 \alias{publish}
-\title{Publish a message in a queue}
+\title{Publish messages in a queue}
 \usage{
 publish(queue, title = "", message = "")
 }
 \arguments{
 \item{queue}{The queue object.}
 
-\item{title}{The title of the message. It can be the empty string.}
+\item{title}{The title of the messages. It can be the empty string.}
 
-\item{message}{The body of the message. It can be the empty string.}
+\item{message}{The body of the messages. It can be the empty string.
+Must be the same length as \code{title}.}
 }
 \description{
-Publish a message in a queue
+Publish messages in a queue
 }
 \seealso{
 \link{liteq} for examples
 
-Other liteq messages: \code{\link{ack}},
-  \code{\link{consume}}, \code{\link{is_empty}},
-  \code{\link{list_failed_messages}},
-  \code{\link{list_messages}}, \code{\link{message_count}},
-  \code{\link{remove_failed_messages}},
-  \code{\link{requeue_failed_messages}},
-  \code{\link{try_consume}}
+Other liteq messages: 
+\code{\link{ack}()},
+\code{\link{consume}()},
+\code{\link{is_empty}()},
+\code{\link{list_failed_messages}()},
+\code{\link{list_messages}()},
+\code{\link{message_count}()},
+\code{\link{remove_failed_messages}()},
+\code{\link{requeue_failed_messages}()},
+\code{\link{try_consume}()}
 }
 \concept{liteq messages}

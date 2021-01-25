@@ -18,12 +18,15 @@ Consume a message if there is one available
 \seealso{
 \link{liteq} for examples
 
-Other liteq messages: \code{\link{ack}},
-  \code{\link{consume}}, \code{\link{is_empty}},
-  \code{\link{list_failed_messages}},
-  \code{\link{list_messages}}, \code{\link{message_count}},
-  \code{\link{publish}},
-  \code{\link{remove_failed_messages}},
-  \code{\link{requeue_failed_messages}}
+Other liteq messages: 
+\code{\link{ack}()},
+\code{\link{consume}()},
+\code{\link{is_empty}()},
+\code{\link{list_failed_messages}()},
+\code{\link{list_messages}()},
+\code{\link{message_count}()},
+\code{\link{publish}()},
+\code{\link{remove_failed_messages}()},
+\code{\link{requeue_failed_messages}()}
 }
 \concept{liteq messages}

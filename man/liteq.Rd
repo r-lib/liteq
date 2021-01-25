@@ -3,7 +3,6 @@
 \docType{package}
 \name{liteq}
 \alias{liteq}
-\alias{liteq-package}
 \title{Lightweight Portable Message Queue Using 'SQLite'}
 \description{
 Message queues for R. Built on top of 'SQLite' databases.
@@ -17,7 +16,7 @@ locked by 'SQLite', the process that tries to access it, must wait until
 it is unlocked. The maximum amount of waiting time is by default 10
 seconds, and it can be changed via the \code{R_LITEQ_BUSY_TIMEOUT}
 environment variable, in milliseconds. If you have many concurrent
-processes using the same liteq database, and see \code{database locked}
+processes using the same liteq database, and see \verb{database locked}
 errors, then you can try to increase the timeout value.
 }
 
