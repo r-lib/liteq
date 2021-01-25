@@ -1,8 +1,9 @@
 
 # 1.x.x
 
-* `publish()` now accepts multiple messages (note that `title` and `message`
-  must be of the same length) and publishes them in a single transaction (#25).
+* `publish()` now accepts multiple messages (note that `title` and
+  `message` must be of the same length) and publishes them in a single
+  transaction (#25, @Enchufa2).
 
 # 1.1.0
 
