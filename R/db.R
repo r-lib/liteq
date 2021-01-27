@@ -71,7 +71,9 @@ do_db <- function(db, query, ...) {
 do_db_execute <- function(db, query, ...) {
   con <- db_connect(db)
   on.exit(dbDisconnect(con))
+  db_lock(con)
   db_execute(con, query, ...)
+  db_execute(con, "COMMIT")
 }
 
 db_lock <- function(con) {
@@ -79,7 +81,7 @@ db_lock <- function(con) {
   while (!done) {
     tryCatch(
       {
-        dbExecute(con, "BEGIN EXCLUSIVE")
+        dbExecute(con, "BEGIN IMMEDIATE")
         done <- TRUE
       },
       error = function(e) NULL
@@ -171,18 +173,18 @@ db_list_queues <- function(db) {
 db_publish <- function(db, queue, title, message) {
   con <- db_connect(db)
   on.exit(dbDisconnect(con))
-  dbWithTransaction(con, {
-    for (i in seq_along(title)) {
-      db_execute(
-        con,
-        "INSERT INTO ?tablename (title, message)
-         VALUES (?title, ?message)",
-        tablename = db_queue_name(queue),
-        title = title[i],
-        message = message[i]
-      )
-    }
-  })
+  db_lock(con)
+  for (i in seq_along(title)) {
+    db_execute(
+      con,
+      "INSERT INTO ?tablename (title, message)
+       VALUES (?title, ?message)",
+      tablename = db_queue_name(queue),
+      title = title[i],
+      message = message[i]
+    )
+  }
+  db_execute(con, "COMMIT")
   invisible()
 }
 
