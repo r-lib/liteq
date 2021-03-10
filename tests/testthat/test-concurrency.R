@@ -43,11 +43,12 @@ test_that("pressure test", {
   }
 
   expect_equal(pp$get_exit_status(), 0)
-  expect_true(pc$is_alive())
 
-  pc$kill()
+  pc$kill(close_connections = FALSE)
   outp <- c(outp, pp$read_all_output())
   outc <- c(outc, pc$read_all_output())
+  close(pc$get_output_connection())
+  close(pc$get_error_connection())
 
   outp <- paste(outp, collapse = "")
   outc <- paste(outc, collapse = "")

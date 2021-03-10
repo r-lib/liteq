@@ -5,11 +5,12 @@
 
 > Lightweight Portable Message Queue Using SQLite
 
-[![Linux Build Status](https://travis-ci.org/r-lib/liteq.svg?branch=master)](https://travis-ci.org/r-lib/liteq)
-[![Windows Build status](https://ci.appveyor.com/api/projects/status/github/r-lib/liteq?svg=true)](https://ci.appveyor.com/project/gaborcsardi/liteq)
+<!-- badges: start -->
+[![R build status](https://github.com/r-lib/liteq/workflows/R-CMD-check/badge.svg)](https://github.com/r-lib/liteq/actions)
 [![](http://www.r-pkg.org/badges/version/liteq)](http://www.r-pkg.org/pkg/liteq)
 [![CRAN RStudio mirror downloads](http://cranlogs.r-pkg.org/badges/liteq)](http://www.r-pkg.org/pkg/liteq)
 [![Coverage Status](https://img.shields.io/codecov/c/github/r-lib/liteq/master.svg)](https://codecov.io/github/r-lib/liteq?branch=master)
+<!-- badges: end -->
 
 Temporary and permanent message queues for R. Built on top of SQLite
 databases. 'SQLite' provides locking, and makes it possible to detect
@@ -19,7 +20,7 @@ or put back in the queue again, potentially a limited number of times.
 ## Installation
 
 ```r
-install.packages("liteq")
+source("https://install-github.me/r-lib/liteq")
 ```
 
 ## Introduction
