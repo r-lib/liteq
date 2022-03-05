@@ -9,7 +9,7 @@
 [![R build status](https://github.com/r-lib/liteq/workflows/R-CMD-check/badge.svg)](https://github.com/r-lib/liteq/actions)
 [![](http://www.r-pkg.org/badges/version/liteq)](http://www.r-pkg.org/pkg/liteq)
 [![CRAN RStudio mirror downloads](http://cranlogs.r-pkg.org/badges/liteq)](http://www.r-pkg.org/pkg/liteq)
-[![Coverage Status](https://img.shields.io/codecov/c/github/r-lib/liteq/master.svg)](https://codecov.io/github/r-lib/liteq?branch=master)
+[![Coverage Status](https://img.shields.io/codecov/c/github/r-lib/liteq/main.svg)](https://codecov.io/github/r-lib/liteq?branch=main)
 <!-- badges: end -->
 
 Temporary and permanent message queues for R. Built on top of SQLite
