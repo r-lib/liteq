@@ -27,3 +27,5 @@ Suggests:
     testthat,
     withr
 Encoding: UTF-8
+Depends: 
+    R (>= 3.6)
