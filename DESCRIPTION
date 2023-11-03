@@ -4,17 +4,17 @@ Version: 1.1.0
 Authors@R: c(
     person("Gábor", "Csárdi", , "csardi.gabor@gmail.com", role = c("aut", "cre")),
     person("Posit Software, PBC", role = c("cph", "fnd"))
-    )
+  )
 Description: Temporary and permanent message queues for R. Built on top of
     'SQLite' databases. 'SQLite' provides locking, and makes it possible
     to detect crashed consumers. Crashed jobs can be automatically marked
-    as "failed", or put in the queue again, potentially a limited number of times.
+    as "failed", or put in the queue again, potentially a limited number
+    of times.
 License: MIT + file LICENSE
-LazyData: true
 URL: https://github.com/r-lib/liteq#readme
 BugReports: https://github.com/r-lib/liteq/issues
-Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.2.3
+Depends: 
+    R (>= 3.6)
 Imports:
     assertthat,
     DBI,
@@ -27,5 +27,6 @@ Suggests:
     testthat,
     withr
 Encoding: UTF-8
-Depends: 
-    R (>= 3.6)
+LazyData: true
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.2.3
