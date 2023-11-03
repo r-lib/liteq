@@ -24,8 +24,16 @@ or put back in the queue again, potentially a limited number of times.
 
 ## Installation
 
+Stable version:
+
 ```r
 install.packages("liteq")
+```
+
+Development versiot:
+
+```r
+pak::pak("r-lib/liteq")
 ```
 
 ## Introduction
