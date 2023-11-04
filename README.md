@@ -7,8 +7,8 @@
 
 <!-- badges: start -->
 [![R-CMD-check](https://github.com/r-lib/liteq/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/r-lib/liteq/actions/workflows/R-CMD-check.yaml)
-[![](http://www.r-pkg.org/badges/version/liteq)](http://www.r-pkg.org/pkg/liteq)
-[![CRAN RStudio mirror downloads](http://cranlogs.r-pkg.org/badges/liteq)](http://www.r-pkg.org/pkg/liteq)
+[![](https://www.r-pkg.org/badges/version/liteq)](https://www.r-pkg.org/pkg/liteq)
+[![CRAN RStudio mirror downloads](https://cranlogs.r-pkg.org/badges/liteq)](https://www.r-pkg.org/pkg/liteq)
 [![Codecov test coverage](https://codecov.io/gh/r-lib/liteq/branch/main/graph/badge.svg)](https://app.codecov.io/gh/r-lib/liteq?branch=main)
 <!-- badges: end -->
 
