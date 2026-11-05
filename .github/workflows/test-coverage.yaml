@@ -35,10 +35,5 @@ jobs:
       - name: Test coverage
         run: |
           uncovr::test()
-          # OIDC tokens are not available for PRs from forks
-          if (nzchar(Sys.getenv("ACTIONS_ID_TOKEN_REQUEST_URL"))) {
-            uncovr::codecov()
-          } else {
-            message("Skipping uncovr::codecov(): no OIDC token for PR from fork.")
-          }
+          uncovr::codecov()
         shell: Rscript {0}
