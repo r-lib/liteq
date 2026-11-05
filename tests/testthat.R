@@ -9,3 +9,5 @@ testme <- function() {
     test_check("liteq")
   )
 }
+
+testme()
