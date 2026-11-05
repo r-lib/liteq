@@ -1,6 +1,6 @@
 Package: liteq
 Title: Lightweight Portable Message Queue Using 'SQLite'
-Version: 1.1.0
+Version: 1.1.0.9000
 Authors@R: c(
     person("Gábor", "Csárdi", , "csardi.gabor@gmail.com", role = c("aut", "cre")),
     person("Posit Software, PBC", role = c("cph", "fnd"))
@@ -13,7 +13,7 @@ Description: Temporary and permanent message queues for R. Built on top of
 License: MIT + file LICENSE
 URL: https://github.com/r-lib/liteq#readme
 BugReports: https://github.com/r-lib/liteq/issues
-Depends: 
+Depends:
     R (>= 3.6)
 Imports:
     assertthat,
