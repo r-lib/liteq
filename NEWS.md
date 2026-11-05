@@ -1,5 +1,5 @@
 
-# liteq (development version)
+# liteq 1.2.0
 
 * `publish()` now accepts multiple messages (note that `title` and
   `message` must be of the same length) and publishes them in a single
