@@ -18,14 +18,22 @@ export(publish)
 export(remove_failed_messages)
 export(requeue_failed_messages)
 export(try_consume)
-importFrom(DBI,dbConnect)
-importFrom(DBI,dbDisconnect)
-importFrom(DBI,dbExecute)
-importFrom(DBI,dbGetQuery)
-importFrom(DBI,sqlInterpolate)
-importFrom(RSQLite,SQLite)
-importFrom(RSQLite,dbExistsTable)
-importFrom(assertthat,"on_failure<-")
-importFrom(assertthat,assert_that)
-importFrom(rappdirs,user_cache_dir)
-importFrom(rappdirs,user_data_dir)
+importFrom(DBI,
+  dbConnect,
+  dbDisconnect,
+  dbExecute,
+  dbGetQuery,
+  sqlInterpolate
+)
+importFrom(RSQLite,
+  SQLite,
+  dbExistsTable
+)
+importFrom(assertthat,
+  "on_failure<-",
+  assert_that
+)
+importFrom(rappdirs,
+  user_cache_dir,
+  user_data_dir
+)

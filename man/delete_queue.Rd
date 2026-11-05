@@ -17,9 +17,9 @@ Delete a queue
 \seealso{
 \link{liteq} for examples
 
-Other liteq queues: 
-\code{\link{create_queue}()},
-\code{\link{ensure_queue}()},
-\code{\link{list_queues}()}
+Other liteq queues:
+\code{\link[=create_queue]{create_queue()}},
+\code{\link[=ensure_queue]{ensure_queue()}},
+\code{\link[=list_queues]{list_queues()}}
 }
 \concept{liteq queues}

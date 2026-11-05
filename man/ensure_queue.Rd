@@ -28,9 +28,9 @@ If it does not exist, then the queue will be created.
 \seealso{
 \link{liteq} for examples
 
-Other liteq queues: 
-\code{\link{create_queue}()},
-\code{\link{delete_queue}()},
-\code{\link{list_queues}()}
+Other liteq queues:
+\code{\link[=create_queue]{create_queue()}},
+\code{\link[=delete_queue]{delete_queue()}},
+\code{\link[=list_queues]{list_queues()}}
 }
 \concept{liteq queues}

@@ -55,3 +55,25 @@ try_consume(q)
 \examples{
 ## See the manual page
 }
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://github.com/r-lib/liteq#readme}
+  \item Report bugs at \url{https://github.com/r-lib/liteq/issues}
+}
+
+}
+\author{
+\strong{Maintainer}: Gábor Csárdi \email{csardi.gabor@gmail.com}
+
+Authors:
+\itemize{
+  \item Gábor Csárdi \email{csardi.gabor@gmail.com}
+}
+
+Other contributors:
+\itemize{
+  \item Posit Software, PBC [copyright holder, funder]
+}
+
+}
