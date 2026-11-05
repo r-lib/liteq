@@ -32,7 +32,34 @@
       <small>Source: <a href="https://github.com/r-lib/liteq/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
-  </main></div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="development version" id="liteq-development-version">liteq (development version)<a class="anchor" aria-label="anchor" href="#liteq-development-version"></a></h2>
+<ul><li><p><code><a href="../reference/publish.html">publish()</a></code> now accepts multiple messages (note that <code>title</code> and <code>message</code> must be of the same length) and publishes them in a single transaction (<a href="https://github.com/r-lib/liteq/issues/25" class="external-link">#25</a>, <a href="https://github.com/Enchufa2" class="external-link">@Enchufa2</a>).</p></li>
+<li><p>Setting the <code>R_LITEQ_BUSY_TIMEOUT</code> environment variable now works properly. Previously it was ignored and the timeout was set to ten seconds (<a href="https://github.com/r-lib/liteq/issues/24" class="external-link">#24</a>, <a href="https://github.com/Enchufa2" class="external-link">@Enchufa2</a>).</p></li>
+<li>
+<p>liteq now works better with many concurrent workers, and fails much less often with “database is locked” errors (<a href="https://github.com/r-lib/liteq/issues/28" class="external-link">#28</a>, <a href="https://github.com/r-lib/liteq/issues/29" class="external-link">#29</a>, <a href="https://github.com/Enchufa2" class="external-link">@Enchufa2</a>):</p>
+<ul><li><p>Checking for crashed workers does not wait for the busy timeout on each message that is being worked on. Previously, this kept the database locked for a long time, for the busy timeout times the number of active workers.</p></li>
+<li><p>All write transactions now use <code>BEGIN IMMEDIATE</code>. This avoids deadlocks between writers, and readers (e.g. <code><a href="../reference/list_messages.html">list_messages()</a></code>) are not blocked while another process is writing.</p></li>
+<li><p>All write operations, including <code><a href="../reference/ensure_queue.html">ensure_queue()</a></code> and <code><a href="../reference/publish.html">publish()</a></code>, now keep waiting for the database lock, like <code><a href="../reference/consume.html">consume()</a></code> and <code><a href="../reference/ack.html">ack()</a></code> already did. Previously they failed if they did not get the lock within the busy timeout.</p></li>
+</ul></li>
+</ul></div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="1.1.0" id="liteq-110">liteq 1.1.0<a class="anchor" aria-label="anchor" href="#liteq-110"></a></h2><p class="text-muted">CRAN release: 2019-03-08</p>
+<ul><li><p>Work around a SQLITE bug that resets the database busy timeout after a successful query. Now we set the timeout after each database operation. The timeout can now also be set via the <code>R_LITEQ_BUSY_TIMEOUT</code> environment variable, and it defaults to 10 seconds, instead of 1 second.</p></li>
+<li><p><code><a href="../reference/consume.html">consume()</a></code> now has a <code>poll_interval</code> argument to set how often to poll the queue for new jobs.</p></li>
+<li><p>New <code><a href="../reference/is_empty.html">is_empty()</a></code> and <code><a href="../reference/message_count.html">message_count()</a></code> functions (<a href="https://github.com/r-lib/liteq/issues/18" class="external-link">#18</a>, <a href="https://github.com/wlandau" class="external-link">@wlandau</a>).</p></li>
+<li><p>Get rid of annoying warning about closing unused connections (<a href="https://github.com/r-lib/liteq/issues/15" class="external-link">#15</a>, <a href="https://github.com/r-lib/liteq/issues/20" class="external-link">#20</a>, <a href="https://github.com/wlandau" class="external-link">@wlandau</a>).</p></li>
+</ul></div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="1.0.1" id="liteq-101">liteq 1.0.1<a class="anchor" aria-label="anchor" href="#liteq-101"></a></h2><p class="text-muted">CRAN release: 2017-10-20</p>
+<ul><li>Set the <code>LITEQ_CACHE_DIR</code> environment variable to change the default cache directory.</li>
+</ul></div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="1.0.0" id="liteq-100">liteq 1.0.0<a class="anchor" aria-label="anchor" href="#liteq-100"></a></h2><p class="text-muted">CRAN release: 2017-01-27</p>
+<p>First public release.</p>
+</div>
+  </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
+    </nav></aside></div>
 
 
    </div>
