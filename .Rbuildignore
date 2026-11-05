@@ -6,3 +6,5 @@
 ^appveyor.yml$
 ^revdep$
 ^\.github$
+^LICENSE\.md$
+^codecov\.yml$

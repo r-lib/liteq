@@ -1,15 +1,20 @@
 
-
+```{r, setup, echo = FALSE, message = FALSE}
+knitr::opts_chunk$set(
+  comment = "#>",
+  tidy = FALSE,
+  error = FALSE)
+```
 
 # liteq
 
 > Lightweight Portable Message Queue Using SQLite
 
 <!-- badges: start -->
-[![R build status](https://github.com/r-lib/liteq/workflows/R-CMD-check/badge.svg)](https://github.com/r-lib/liteq/actions)
-[![](http://www.r-pkg.org/badges/version/liteq)](http://www.r-pkg.org/pkg/liteq)
-[![CRAN RStudio mirror downloads](http://cranlogs.r-pkg.org/badges/liteq)](http://www.r-pkg.org/pkg/liteq)
-[![Coverage Status](https://img.shields.io/codecov/c/github/r-lib/liteq/master.svg)](https://codecov.io/github/r-lib/liteq?branch=master)
+[![R-CMD-check](https://github.com/r-lib/liteq/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/r-lib/liteq/actions/workflows/R-CMD-check.yaml)
+[![](https://www.r-pkg.org/badges/version/liteq)](https://www.r-pkg.org/pkg/liteq)
+[![CRAN RStudio mirror downloads](https://cranlogs.r-pkg.org/badges/liteq)](https://www.r-pkg.org/pkg/liteq)
+[![Codecov test coverage](https://codecov.io/gh/r-lib/liteq/graph/badge.svg)](https://app.codecov.io/gh/r-lib/liteq)
 <!-- badges: end -->
 
 Temporary and permanent message queues for R. Built on top of SQLite
@@ -19,8 +24,16 @@ or put back in the queue again, potentially a limited number of times.
 
 ## Installation
 
+Stable version:
+
 ```r
-source("https://install-github.me/r-lib/liteq")
+install.packages("liteq")
+```
+
+Development versiot:
+
+```r
+pak::pak("r-lib/liteq")
 ```
 
 ## Introduction
@@ -37,32 +50,18 @@ temporary SQLites databases for locking, and finding crashed workers
 
 ### Basic usage
 
-
-```r
+```{r}
 library(liteq)
 ```
 
 In the following we create a queue in a temporary queue database.
 The database will be removed if the R session quits.
 
-
-```r
+```{r}
 db <- tempfile()
 q <- ensure_queue("jobs", db = db)
 q
-```
-
-```
-#> liteq queue 'jobs'
-```
-
-```r
 list_queues(db)
-```
-
-```
-#> [[1]]
-#> liteq queue 'jobs'
 ```
 
 Note that `ensure_queue()` is idempotent, if you call it again on the same
@@ -72,17 +71,10 @@ multiple processes, the locking mechanism eliminates race conditions.
 
 To publish a message in the queue, call `publish()` on the queue object:
 
-
-```r
+```{r}
 publish(q, title = "First message", message = "Hello world!")
 publish(q, title = "Second message", message = "Hello again!")
 list_messages(q)
-```
-
-```
-#>   id          title status
-#> 1  1  First message  READY
-#> 2  2 Second message  READY
 ```
 
 A `liteq` message has a title, which is a string scalar, and the message
@@ -95,35 +87,17 @@ Two functions are available to consume a message from a queue.
 object), or `NULL` if the queue is empty. The `consume()` function blocks
 if the queue is empty, and waits until a message appears in it.
 
-
-```r
+```{r}
 msg <- try_consume(q)
 msg
-```
-
-```
-#> liteq message from queue 'jobs':
-#>   First message (12 B)
 ```
 
 The title and the message body are available as fields of the message
 object:
 
-
-```r
+```{r}
 msg$title
-```
-
-```
-#> [1] "First message"
-```
-
-```r
 msg$message
-```
-
-```
-#> [1] "Hello world!"
 ```
 
 When a consumer is done processing a message it must call `ack()` on the
@@ -133,37 +107,18 @@ ackowledgement) on the message object. Then the status of the message will
 be set to `"FAILED"`. Failed messages can be removed from the queue, or
 put back in the queue again, depending on the application.
 
-
-```r
+```{r}
 ack(msg)
 list_messages(q)
-```
-
-```
-#>   id          title status
-#> 1  2 Second message  READY
-```
-
-```r
 msg2 <- try_consume(q)
 nack(msg2)
 list_messages(q)
 ```
 
-```
-#>   id          title status
-#> 1  2 Second message FAILED
-```
-
 The queue is empty now, so `try_consume()` returns `NULL`:
 
-
-```r
+```{r}
 try_consume(q)
-```
-
-```
-#> NULL
 ```
 
 ### Crashed workers

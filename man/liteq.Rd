@@ -21,7 +21,9 @@ errors, then you can try to increase the timeout value.
 }
 
 \section{Examples}{
-\preformatted{# We don't run this, because it writes to the cache directory
+
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{# We don't run this, because it writes to the cache directory
 db <- tempfile()
 q <- ensure_queue("jobs", db = db)
 q
@@ -47,7 +49,7 @@ list_messages(q)
 # No more messages
 is_empty(q)
 try_consume(q)
-}
+}\if{html}{\out{</div>}}
 }
 
 \examples{
