@@ -23,8 +23,8 @@ make_message <- function(id, title, message, db, queue, lockdir) {
   lock <- message_lock_file(lockdir, queue, id)
   con <- db_connect(lock)
   # Order is important here!
-  dbExecute(con, "CREATE TABLE foo (id INT)")
-  dbExecute(con, "BEGIN IMMEDIATE")
+  db_execute(con, "CREATE TABLE foo (id INT)")
+  db_execute(con, "BEGIN IMMEDIATE")
 
   structure(
     list(
