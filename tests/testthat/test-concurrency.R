@@ -58,3 +58,39 @@ test_that("pressure test", {
 
   expect_null(pp$get_result())
 })
+
+test_that("many workers, short busy timeout (#28)", {
+
+  skip_on_cran()
+
+  task <- function(db) {
+    library(liteq)
+    q <- ensure_queue("jobs", db = db)
+    msg <- consume(q, poll_interval = 100)
+    Sys.sleep(3)
+    ack(msg)
+    msg$title
+  }
+
+  withr::local_envvar(R_LITEQ_BUSY_TIMEOUT = "1000")
+  db <- tempfile()
+  on.exit(unlink(db), add = TRUE)
+  q <- ensure_queue("jobs", db = db)
+
+  n <- 20
+  workers <- replicate(n, callr::r_bg(task, list(db = db)), simplify = FALSE)
+  on.exit(lapply(workers, function(w) w$kill()), add = TRUE)
+
+  titles <- as.character(seq_len(n))
+  publish(q, titles[1:(n / 2)], rep("x", n / 2))
+  Sys.sleep(2)
+  publish(q, titles[(n / 2 + 1):n], rep("x", n / 2))
+
+  limit <- Sys.time() + 60
+  while (nrow(list_messages(q)) > 0 && Sys.time() < limit) Sys.sleep(0.2)
+  expect_true(is_empty(q))
+
+  for (w in workers) w$wait(10000)
+  res <- vapply(workers, function(w) w$get_result(), character(1))
+  expect_equal(sort(as.integer(res)), seq_len(n))
+})

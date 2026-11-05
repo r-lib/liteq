@@ -1,6 +1,26 @@
 
 context("crashed consumers")
 
+test_that("live consumers are not treated as crashed", {
+  db <- tempfile()
+  on.exit(unlink(db), add = TRUE)
+  q <- ensure_queue("jobs", db = db, crash_strategy = "requeue")
+  publish(q, title = c("a", "b"), message = c("1", "2"))
+  msg1 <- try_consume(q)
+  msg2 <- try_consume(q)
+
+  ## no READY messages, so this runs the crash check, quickly
+  withr::local_envvar(R_LITEQ_BUSY_TIMEOUT = "5000")
+  t <- system.time(msg3 <- try_consume(q))[["elapsed"]]
+  expect_null(msg3)
+  expect_lt(t, 2)
+  expect_equal(list_messages(q)$status, c("WORKING", "WORKING"))
+
+  expect_silent(ack(msg1))
+  expect_silent(ack(msg2))
+  expect_true(is_empty(q))
+})
+
 test_that("requeueing crashed consumers", {
   db <- tempfile()
   on.exit(unlink(db), add = TRUE)
