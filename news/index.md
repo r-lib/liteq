@@ -2,6 +2,8 @@
 
 ## liteq 1.2.0
 
+CRAN release: 2026-11-05
+
 - [`publish()`](../reference/publish.md) now accepts multiple messages
   (note that `title` and `message` must be of the same length) and
   publishes them in a single transaction

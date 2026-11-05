@@ -11,7 +11,7 @@
 ## Citation
 
 Source:
-[`DESCRIPTION`](https://github.com/r-lib/liteq/blob/main/DESCRIPTION)
+[`DESCRIPTION`](https://github.com/r-lib/liteq/blob/v1.2.0/DESCRIPTION)
 
 Csárdi G (2026). *liteq: Lightweight Portable Message Queue Using
 'SQLite'*. R package version 1.2.0,
