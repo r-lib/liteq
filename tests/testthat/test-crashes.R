@@ -30,7 +30,7 @@ test_that("requeueing crashed consumers", {
 
   ## now we simulate a crash, so the connection embedded in `msg` is closed
   rm(msg)
-  suppressWarnings(gc())
+  withr::with_options(list(warn = -1), gc())
 
   ## now, if we try to get a message, the same message must be served again
   msg <- try_consume(q)
@@ -53,7 +53,7 @@ test_that("requeueing multiple crashed consumers", {
 
   ## both crash
   rm(msg, msg2)
-  gc()
+  withr::with_options(list(warn = -1), gc())
 
   ## both are restarted
   msg <- try_consume(q)
@@ -83,7 +83,7 @@ test_that("failing crashed consumers", {
 
   ## now we simulate a crash, so the connection embedded in `msg` is closed
   rm(msg)
-  gc()
+  withr::with_options(list(warn = -1), gc())
 
   msg <- try_consume(q)
   expect_null(msg)
@@ -100,7 +100,7 @@ test_that("requeueing crashed consumers a limited number of times", {
 
   ## now we simulate a crash, so the connection embedded in `msg` is closed
   rm(msg)
-  gc()
+  withr::with_options(list(warn = -1), gc())
 
   ## it is requeued 
   msg <- try_consume(q)
@@ -112,7 +112,7 @@ test_that("requeueing crashed consumers a limited number of times", {
 
   ## fail it again
   rm(msg)
-  gc()
+  withr::with_options(list(warn = -1), gc())
   
   ## it is requeued again
   msg <- try_consume(q)
@@ -124,7 +124,7 @@ test_that("requeueing crashed consumers a limited number of times", {
 
   ## fail it again
   rm(msg)
-  gc()
+  withr::with_options(list(warn = -1), gc())
 
   ## not requeued any more
   msg <- try_consume(q)
