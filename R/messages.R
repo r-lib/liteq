@@ -23,6 +23,8 @@ make_message <- function(id, title, message, db, queue, lockdir) {
   lock <- message_lock_file(lockdir, queue, id)
   con <- db_connect(lock)
   db_execute(con, "CREATE TABLE foo (id INT)")
+  ## This must be EXCLUSIVE, other locks do not block readers, and
+  ## db_clean_crashed() would think that the worker has crashed.
   db_execute(con, "BEGIN EXCLUSIVE")
 
   structure(

@@ -74,23 +74,65 @@ test_that("db_lock", {
   ## We can do queries
   expect_silent(db_query(con, "SELECT * FROM meta"))
 
-  ## But others cannot even connect
+  ## Others can read
   con3 <- dbConnect(SQLite(), db, synchronous = NULL)
-  expect_error(db_query(con3, "SELECT * FROM meta"))
+  expect_silent(db_query(con3, "SELECT * FROM meta"))
+  expect_silent(db_query(con2, "SELECT * FROM meta"))
 
-  ## Already existing connections cannot query
-  expect_error(db_query(con2, "SELECT * FROM meta"))
-
-  ## But we can request another lock, and that waits.
-  ## For this we need another R process, so we cannot test it now....
+  ## But others cannot write
+  expect_error(db_lock(con2, retry = FALSE), "locked")
+  expect_error(
+    db_execute(con3, "INSERT INTO meta (name) VALUES ('foo')"),
+    "locked"
+  )
 
   ## Removing the connection removes the lock
   rm(con)
   gc()
-  expect_silent(db_query(con2, "SELECT * FROM meta"))
-  expect_silent(db_query(con3, "SELECT * FROM meta"))
+  expect_silent(db_lock(con2, retry = FALSE))
+  dbExecute(con2, "ROLLBACK")
   rm(con2, con3)
   gc()
+})
+
+test_that("db_with_write_transaction rolls back on error", {
+  db <- tempfile()
+  on.exit(unlink(db), add = TRUE)
+  ensure_db(db)
+  con <- db_connect(db)
+  on.exit(dbDisconnect(con), add = TRUE)
+  expect_error(
+    db_with_write_transaction(con, {
+      db_execute(con, "INSERT INTO meta (name) VALUES ('foo')")
+      stop("oops")
+    }),
+    "oops"
+  )
+  expect_equal(nrow(db_query(con, "SELECT * FROM meta")), 0)
+  ## and the connection is usable again
+  db_with_write_transaction(
+    con,
+    db_execute(con, "INSERT INTO meta (name) VALUES ('foo')")
+  )
+  expect_equal(nrow(db_query(con, "SELECT * FROM meta")), 1)
+})
+
+test_that("db_probe_message_lock", {
+  withr::local_envvar(LITEQ_CACHE_DIR = tempfile())
+  db <- tempfile()
+  on.exit(unlink(db), add = TRUE)
+  q <- ensure_queue("jobs", db = db)
+  publish(q, title = "title", message = "MSG")
+  msg <- try_consume(q)
+  lock <- msg$lock@dbname
+
+  ## live worker is busy, and we do not wait for the busy timeout
+  withr::local_envvar(R_LITEQ_BUSY_TIMEOUT = "5000")
+  t <- system.time(x <- db_probe_message_lock(lock))[["elapsed"]]
+  expect_identical(x, "busy")
+  expect_lt(t, 2)
+
+  ack(msg)
 })
 
 test_that("db_create_db", {

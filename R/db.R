@@ -8,7 +8,7 @@ db_set_timeout <- function(con) {
 }
 
 #' @importFrom DBI dbGetQuery sqlInterpolate dbConnect dbDisconnect
-#' @importFrom DBI dbExecute dbWithTransaction
+#' @importFrom DBI dbExecute
 #' @importFrom RSQLite SQLite
 
 db_connect <- function(..., synchronous = NULL) {
@@ -71,20 +71,54 @@ do_db <- function(db, query, ...) {
 do_db_execute <- function(db, query, ...) {
   con <- db_connect(db)
   on.exit(dbDisconnect(con))
-  db_execute(con, query, ...)
+  db_with_write_transaction(con, db_execute(con, query, ...))
 }
 
-db_lock <- function(con) {
-  done <- FALSE
-  while (!done) {
-    tryCatch(
+#' Start a write transaction
+#'
+#' We use `BEGIN IMMEDIATE` for every write. A deferred transaction
+#' (plain `BEGIN`) that reads first and writes later might fail with
+#' "database is locked" right away, without waiting for the busy
+#' timeout, because SQLite cannot wait there without risking a deadlock.
+#' Unlike `BEGIN EXCLUSIVE`, `BEGIN IMMEDIATE` does not block readers.
+#'
+#' If `retry` is `TRUE`, then we keep trying until we get the lock.
+#' Each try waits for the busy timeout, so this does not spin.
+#'
+#' @param con DB connection.
+#' @param retry Whether to retry if the database is locked.
+#'
+#' @keywords internal
+
+db_lock <- function(con, retry = TRUE) {
+  while (TRUE) {
+    ok <- tryCatch(
       {
-        dbExecute(con, "BEGIN EXCLUSIVE")
-        done <- TRUE
+        dbExecute(con, "BEGIN IMMEDIATE")
+        TRUE
       },
-      error = function(e) NULL
+      error = function(e) {
+        if (!retry || !grepl("locked", conditionMessage(e))) stop(e)
+        FALSE
+      }
     )
+    if (ok) break
   }
+}
+
+db_with_write_transaction <- function(con, code, retry = FALSE) {
+  db_lock(con, retry = retry)
+  tryCatch(
+    {
+      res <- force(code)
+      dbExecute(con, "COMMIT")
+      res
+    },
+    error = function(e) {
+      try_silent(dbExecute(con, "ROLLBACK"))
+      stop(e)
+    }
+  )
 }
 
 db_create_db <- function(db) {
@@ -104,11 +138,12 @@ db_create_db <- function(db) {
 db_ensure_queue <- function(name, db, crash_strategy) {
   con <- db_connect(db)
   on.exit(dbDisconnect(con), add = TRUE)
-  db_execute(con, "BEGIN")
-  tablename <- db_queue_name(name)
-  if (!dbExistsTable(con, tablename)) {
-    db_create_queue_locked(db, con, name, crash_strategy)
-  }
+  db_with_write_transaction(con, {
+    tablename <- db_queue_name(name)
+    if (!dbExistsTable(con, tablename)) {
+      db_create_queue_locked(db, con, name, crash_strategy)
+    }
+  })
 }
 
 #' Create a queue
@@ -131,8 +166,9 @@ db_ensure_queue <- function(name, db, crash_strategy) {
 db_create_queue <- function(name, db, crash_strategy) {
   con <- db_connect(db)
   on.exit(dbDisconnect(con), add = TRUE)
-  db_execute(con, "BEGIN")
-  db_create_queue_locked(db, con, name, crash_strategy)
+  db_with_write_transaction(con, {
+    db_create_queue_locked(db, con, name, crash_strategy)
+  })
 }
 
 db_create_queue_locked <- function(db, con, name, crash_strategy) {
@@ -154,7 +190,6 @@ db_create_queue_locked <- function(db, con, name, crash_strategy) {
     lockdir = db_lockdir(db),
     crash = as.character(crash_strategy)
   )
-  db_execute(con, "COMMIT")
 }
 
 db_lockdir <- function(db) {
@@ -171,7 +206,7 @@ db_list_queues <- function(db) {
 db_publish <- function(db, queue, title, message) {
   con <- db_connect(db)
   on.exit(dbDisconnect(con))
-  dbWithTransaction(con, {
+  db_with_write_transaction(con, {
     for (i in seq_along(title)) {
       db_execute(
         con,
@@ -264,15 +299,8 @@ db_clean_crashed <- function(con, queue) {
   locks <- message_lock_file(meta$lockdir, queue, work$id)
   for (i in seq_along(locks)) {
     lock <- locks[[i]]
-    x <- tryCatch(
-      {
-        lcon <- db_connect(lock)
-        dbGetQuery(lcon, "SELECT * FROM foo")
-      },
-      error = function(x) "busy"
-    )
+    x <- db_probe_message_lock(lock)
     if (! identical(x, "busy")) {
-      try_silent(dbDisconnect(lcon))
       if (meta$requeue == "fail" || meta$requeue == "requeue") {
         ## Always fail, or always requeue
         status <- if (meta$requeue == "fail") "FAILED" else "READY"
@@ -296,6 +324,29 @@ db_clean_crashed <- function(con, queue) {
     }
   }
   TRUE
+}
+
+#' Check if the worker holding a message lock is still alive
+#'
+#' A live worker holds an exclusive lock on the lock file, so reading it
+#' fails. We must not wait for the busy timeout here: we hold the write
+#' lock of the main DB, and every other client would have to wait, too.
+#'
+#' @param lock Path to the message lock file.
+#' @return `"busy"` if the worker is alive.
+#'
+#' @keywords internal
+
+db_probe_message_lock <- function(lock) {
+  tryCatch(
+    {
+      lcon <- dbConnect(SQLite(), lock, synchronous = NULL)
+      on.exit(try_silent(dbDisconnect(lcon)), add = TRUE)
+      dbExecute(lcon, "PRAGMA busy_timeout = 0")
+      dbGetQuery(lcon, "SELECT * FROM foo")
+    },
+    error = function(x) "busy"
+  )
 }
 
 db_clean_crashed_update <- function(con, queue, id, status) {
@@ -415,7 +466,7 @@ db_requeue_all_failed_messages <- function(db, queue) {
 db_requeue_some_failed_messages <- function(db, queue, id) {
   con <- db_connect(db)
   on.exit(dbDisconnect(con))
-  dbWithTransaction(con, {
+  db_with_write_transaction(con, {
     for (id1 in id) {
       db_execute(
         con,
@@ -449,7 +500,7 @@ db_remove_all_failed_messages <- function(db, queue) {
 db_remove_some_failed_messages <- function(db, queue, id) {
   con <- db_connect(db)
   on.exit(dbDisconnect(con))
-  dbWithTransaction(con, {
+  db_with_write_transaction(con, {
     for (id1 in id) {
       db_execute(
         con,
@@ -465,7 +516,7 @@ db_remove_some_failed_messages <- function(db, queue, id) {
 db_delete_queue <- function(db, queue, force) {
   con <- db_connect(db)
   on.exit(dbDisconnect(con))
-  dbWithTransaction(con, {
+  db_with_write_transaction(con, {
     num <- db_query(
       con,
       "SELECT COUNT(*) FROM ?tablename",

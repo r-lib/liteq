@@ -9,6 +9,18 @@
   properly. Previously it was ignored and the timeout was set to
   ten seconds (#24, @Enchufa2).
 
+* liteq now works better with many concurrent workers, and fails much
+  less often with "database is locked" errors (#28, #29, @Enchufa2):
+
+  - Checking for crashed workers does not wait for the busy timeout on
+    each message that is being worked on. Previously, this kept the
+    database locked for a long time, for the busy timeout times the
+    number of active workers.
+
+  - All write transactions now use `BEGIN IMMEDIATE`. This avoids
+    deadlocks between writers, and readers (e.g. `list_messages()`) are
+    not blocked while another process is writing.
+
 # 1.1.0
 
 * Work around a SQLITE bug that resets the database busy timeout after a
