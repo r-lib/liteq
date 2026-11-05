@@ -12,6 +12,8 @@
 <url><loc>/reference/db_ack.html</loc></url>
 <url><loc>/reference/db_consume.html</loc></url>
 <url><loc>/reference/db_create_queue.html</loc></url>
+<url><loc>/reference/db_lock.html</loc></url>
+<url><loc>/reference/db_probe_message_lock.html</loc></url>
 <url><loc>/reference/db_try_consume.html</loc></url>
 <url><loc>/reference/default_db.html</loc></url>
 <url><loc>/reference/delete_queue.html</loc></url>
