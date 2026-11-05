@@ -1,5 +1,5 @@
 
-# development version
+# liteq (development version)
 
 * `publish()` now accepts multiple messages (note that `title` and
   `message` must be of the same length) and publishes them in a single
@@ -21,7 +21,7 @@
     deadlocks between writers, and readers (e.g. `list_messages()`) are
     not blocked while another process is writing.
 
-# 1.1.0
+# liteq 1.1.0
 
 * Work around a SQLITE bug that resets the database busy timeout after a
   successful query. Now we set the timeout after each database operation.
@@ -36,11 +36,11 @@
 * Get rid of annoying warning about closing unused connections
   (#15, #20, @wlandau).
 
-# 1.0.1
+# liteq 1.0.1
 
 * Set the `LITEQ_CACHE_DIR` environment variable to change the
   default cache directory.
 
-# 1.0.0
+# liteq 1.0.0
 
 First public release.
