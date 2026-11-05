@@ -6,10 +6,10 @@
 > Lightweight Portable Message Queue Using SQLite
 
 <!-- badges: start -->
-[![R-CMD-check](https://github.com/r-lib/liteq/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/r-lib/liteq/actions/workflows/R-CMD-check.yaml)
+[![R-CMD-check](https://github.com/gaborcsardi/liteq/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/gaborcsardi/liteq/actions/workflows/R-CMD-check.yaml)
 [![](https://www.r-pkg.org/badges/version/liteq)](https://www.r-pkg.org/pkg/liteq)
 [![CRAN RStudio mirror downloads](https://cranlogs.r-pkg.org/badges/liteq)](https://www.r-pkg.org/pkg/liteq)
-[![Codecov test coverage](https://codecov.io/gh/r-lib/liteq/graph/badge.svg)](https://app.codecov.io/gh/r-lib/liteq)
+[![Codecov test coverage](https://codecov.io/gh/gaborcsardi/liteq/graph/badge.svg)](https://app.codecov.io/gh/gaborcsardi/liteq)
 <!-- badges: end -->
 
 Temporary and permanent message queues for R. Built on top of SQLite
@@ -46,7 +46,7 @@ temporary SQLites databases for locking, and finding crashed workers
 ### Basic usage
 
 
-```r
+``` r
 library(liteq)
 ```
 
@@ -54,7 +54,7 @@ In the following we create a queue in a temporary queue database.
 The database will be removed if the R session quits.
 
 
-```r
+``` r
 db <- tempfile()
 q <- ensure_queue("jobs", db = db)
 q
@@ -64,7 +64,7 @@ q
 #> liteq queue 'jobs'
 ```
 
-```r
+``` r
 list_queues(db)
 ```
 
@@ -81,7 +81,7 @@ multiple processes, the locking mechanism eliminates race conditions.
 To publish a message in the queue, call `publish()` on the queue object:
 
 
-```r
+``` r
 publish(q, title = "First message", message = "Hello world!")
 publish(q, title = "Second message", message = "Hello again!")
 list_messages(q)
@@ -104,7 +104,7 @@ object), or `NULL` if the queue is empty. The `consume()` function blocks
 if the queue is empty, and waits until a message appears in it.
 
 
-```r
+``` r
 msg <- try_consume(q)
 msg
 ```
@@ -118,7 +118,7 @@ The title and the message body are available as fields of the message
 object:
 
 
-```r
+``` r
 msg$title
 ```
 
@@ -126,7 +126,7 @@ msg$title
 #> [1] "First message"
 ```
 
-```r
+``` r
 msg$message
 ```
 
@@ -142,7 +142,7 @@ be set to `"FAILED"`. Failed messages can be removed from the queue, or
 put back in the queue again, depending on the application.
 
 
-```r
+``` r
 ack(msg)
 list_messages(q)
 ```
@@ -152,7 +152,7 @@ list_messages(q)
 #> 1  2 Second message  READY
 ```
 
-```r
+``` r
 msg2 <- try_consume(q)
 nack(msg2)
 list_messages(q)
@@ -166,7 +166,7 @@ list_messages(q)
 The queue is empty now, so `try_consume()` returns `NULL`:
 
 
-```r
+``` r
 try_consume(q)
 ```
 
