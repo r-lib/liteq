@@ -8,3 +8,5 @@
 ^\.github$
 ^LICENSE\.md$
 ^codecov\.yml$
+^README\.html$
+^\.cache$
