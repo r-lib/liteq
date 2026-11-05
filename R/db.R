@@ -106,7 +106,7 @@ db_lock <- function(con, retry = TRUE) {
   }
 }
 
-db_with_write_transaction <- function(con, code, retry = FALSE) {
+db_with_write_transaction <- function(con, code, retry = TRUE) {
   db_lock(con, retry = retry)
   tryCatch(
     {

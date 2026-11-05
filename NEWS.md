@@ -21,6 +21,11 @@
     deadlocks between writers, and readers (e.g. `list_messages()`) are
     not blocked while another process is writing.
 
+  - All write operations, including `ensure_queue()` and `publish()`,
+    now keep waiting for the database lock, like `consume()` and
+    `ack()` already did. Previously they failed if they did not get the
+    lock within the busy timeout.
+
 # liteq 1.1.0
 
 * Work around a SQLITE bug that resets the database busy timeout after a
