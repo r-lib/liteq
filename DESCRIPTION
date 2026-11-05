@@ -11,8 +11,8 @@ Description: Temporary and permanent message queues for R. Built on top of
     as "failed", or put in the queue again, potentially a limited number
     of times.
 License: MIT + file LICENSE
-URL: https://github.com/r-lib/liteq#readme, https://github.com/gaborcsardi/liteq
-BugReports: https://github.com/gaborcsardi/liteq/issues
+URL: https://github.com/r-lib/liteq#readme, https://github.com/r-lib/liteq
+BugReports: https://github.com/r-lib/liteq/issues
 Depends:
     R (>= 3.6)
 Imports:
