@@ -13,6 +13,9 @@ permissions: read-all
 jobs:
   test-coverage:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
 
@@ -32,11 +35,10 @@ jobs:
       - name: Test coverage
         run: |
           uncovr::test()
-          if (nzchar(Sys.getenv("CODECOV_TOKEN")) || Sys.getenv("GITHUB_EVENT_NAME") != "pull_request") {
+          # OIDC tokens are not available for PRs from forks
+          if (nzchar(Sys.getenv("ACTIONS_ID_TOKEN_REQUEST_URL"))) {
             uncovr::codecov()
           } else {
-            message("Skipping uncovr::codecov(): no CODECOV_TOKEN available for PR run.")
+            message("Skipping uncovr::codecov(): no OIDC token for PR from fork.")
           }
         shell: Rscript {0}
-        env:
-          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
